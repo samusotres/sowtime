@@ -1,0 +1,899 @@
+<title>Sowtime</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="What to plant this month, anywhere in the world. Enter your location and how much sun your garden gets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a seed-packet almanac. Setup panel on top, packet-style plant cards below, each with the sow/harvest month strip printed on the back of real seed packets. */
+:root {
+  --bg: #f3f5ef;
+  --surface: #ffffff;
+  --surface-2: #eaeee6;
+  --ink: #1c2a21;
+  --muted: #5b685f;
+  --line: #d8dfd4;
+  --accent: #2d6a43;
+  --accent-ink: #ffffff;
+  --sun: #d99412;
+  --sow: #3a8a55;
+  --indoor: #3577a0;
+  --seedling: #a07c12;
+  --plant: #8a5a3b;
+  --harvest: #b0436a;
+  --frost: #4f8fbf;
+  --hot: #c4552d;
+  --veg: #3a8a55; --herb: #4a8f86; --fruit: #b0436a; --flower: #8f5bb5;
+  --shadow: 0 1px 2px rgba(28,42,33,.06), 0 6px 18px rgba(28,42,33,.07);
+  --font-display: "Young Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111713; --surface: #18201b; --surface-2: #212b24; --ink: #e4ebe3; --muted: #9ba79e; --line: #2c3830;
+  --accent: #74c38f; --accent-ink: #0d1a12; --sun: #f0b43c; --sow: #66b882; --indoor: #69a9d2; --seedling: #d1ad45;
+  --plant: #c08b66; --harvest: #e07399; --frost: #7fb6dd; --hot: #e37c55;
+  --veg: #66b882; --herb: #6fb7ad; --fruit: #e07399; --flower: #b88ad8;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.28); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111713; --surface: #18201b; --surface-2: #212b24; --ink: #e4ebe3; --muted: #9ba79e; --line: #2c3830;
+  --accent: #74c38f; --accent-ink: #0d1a12; --sun: #f0b43c; --sow: #66b882; --indoor: #69a9d2; --seedling: #d1ad45;
+  --plant: #c08b66; --harvest: #e07399; --frost: #7fb6dd; --hot: #e37c55;
+  --veg: #66b882; --herb: #6fb7ad; --fruit: #e07399; --flower: #b88ad8;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.28); color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Header */
+.top { padding-block: 18px 6px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand svg { width: 34px; height: 34px; }
+.brand h1 { font-size: 28px; line-height: 1; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.prefs { display: flex; gap: 8px; align-items: center; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 3px; }
+.seg button { border: 0; background: transparent; padding: 5px 11px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+select.lang { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 10px; font-size: 13px; font-weight: 600; }
+
+/* Setup panel */
+.setup { grid-template-columns: minmax(0, 1fr); margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 18px; display: grid; gap: 18px; }
+@media (min-width: 900px) { .setup { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 22px 28px; padding: 22px 24px; } .setup .months-row { grid-column: 1 / -1; } }
+.field { min-width: 0; }
+.field > label, .field > .lbl { display: block; font-weight: 700; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.search { position: relative; }
+.search-box { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: var(--r); padding: 0 6px 0 12px; background: var(--bg); transition: border-color .15s; }
+.search-box:focus-within { border-color: var(--accent); }
+.search-box input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: 12px 0; font-size: 16px; }
+.btn-loc { display: inline-flex; align-items: center; gap: 6px; border: 0; background: var(--surface-2); padding: 8px 10px; border-radius: 9px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.btn-loc:hover { background: var(--line); }
+@media (max-width: 420px) { .btn-loc span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
+.suggest { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); max-height: 320px; overflow-y: auto; padding: 6px; }
+.suggest button { display: flex; width: 100%; text-align: left; gap: 10px; align-items: center; border: 0; background: transparent; padding: 9px 10px; border-radius: 8px; }
+.suggest button:hover, .suggest button.on { background: var(--surface-2); }
+.suggest small { color: var(--muted); }
+.suggest .note { padding: 8px 10px; font-size: 13px; color: var(--muted); }
+.suggest .tag { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.place-line { margin-top: 8px; font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.place-line strong { color: var(--ink); font-weight: 600; }
+.pill-demo { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: color-mix(in srgb, var(--sun) 22%, transparent); color: var(--ink); padding: 2px 7px; border-radius: 999px; }
+
+.suns { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+@media (min-width: 520px) { .suns { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+.sun-opt { border: 1.5px solid var(--line); background: var(--bg); border-radius: var(--r); padding: 10px; text-align: left; display: grid; gap: 4px; transition: border-color .15s, background .15s; }
+.sun-opt svg { width: 30px; height: 30px; }
+.sun-opt b { font-size: 14px; }
+.sun-opt span { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.sun-opt[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+.hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+
+.months { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+@media (min-width: 700px) { .months { grid-template-columns: repeat(12, minmax(0, 1fr)); } }
+.months button { border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 0 6px; font-weight: 600; font-size: 14px; display: grid; justify-items: center; gap: 1px; }
+.months button small { font-size: 10px; font-weight: 600; color: var(--muted); height: 13px; line-height: 13px; }
+.months button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.months button[aria-pressed="true"] small { color: var(--accent-ink); opacity: .85; }
+
+/* Summary */
+.summary { margin-top: 22px; display: grid; gap: 14px; }
+.summary h2 { font-size: clamp(24px, 3.6vw, 34px); line-height: 1.15; }
+.summary h2 em { font-style: normal; color: var(--accent); }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 760px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+.stat .k { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.stat .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.stat .s { font-size: 12.5px; color: var(--muted); }
+.chip-frost { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.lv0 { background: color-mix(in srgb, var(--sow) 16%, transparent); color: var(--sow); }
+.lv1 { background: color-mix(in srgb, var(--frost) 16%, transparent); color: var(--frost); }
+.lv2, .lv3 { background: color-mix(in srgb, var(--frost) 26%, transparent); color: var(--frost); }
+.status { font-size: 14px; color: var(--muted); }
+.status.err { color: var(--hot); }
+
+/* Tabs */
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); margin-top: 18px; border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 25; background: var(--bg); }
+.tabs .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs button { border: 0; background: transparent; padding: 12px 12px 11px; font-weight: 600; color: var(--muted); border-bottom: 2.5px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs .count { font-variant-numeric: tabular-nums; background: var(--surface-2); border-radius: 999px; padding: 0 7px; margin-left: 4px; font-size: 12px; }
+
+/* Filters */
+.filters { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-block: 16px 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+.find { margin-left: auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0 12px; min-width: 0; flex: 1 1 180px; max-width: 280px; }
+.find input { border: 0; outline: 0; background: transparent; padding: 7px 0; min-width: 0; flex: 1; font-size: 14px; }
+@media (max-width: 640px) { .find { margin-left: 0; max-width: none; flex-basis: 100%; } }
+
+/* Plant cards */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 272px), 1fr)); gap: 12px; padding-block: 8px 12px; }
+.card { position: relative; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 10px; transition: transform .12s, box-shadow .12s, border-color .12s; min-width: 0; }
+.card:hover { transform: translateY(-1px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.card::before { content: ""; position: absolute; left: 14px; right: 14px; top: 0; height: 3px; border-radius: 0 0 3px 3px; background: var(--c, var(--veg)); }
+.card-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.card-h h3 { font-size: 19px; line-height: 1.2; }
+.sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.sub i { font-style: italic; }
+.rate { flex: none; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; }
+.rate.ideal { background: color-mix(in srgb, var(--sow) 18%, transparent); color: var(--sow); }
+.rate.good { background: color-mix(in srgb, var(--seedling) 20%, transparent); color: var(--seedling); }
+.rate.possible { background: var(--surface-2); color: var(--muted); }
+.acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.act { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; padding: 3px 9px 3px 7px; border-radius: 8px; background: color-mix(in srgb, var(--a) 13%, transparent); color: var(--ink); }
+.act svg { width: 15px; height: 15px; color: var(--a); }
+.harv { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.harv b { color: var(--ink); font-weight: 600; }
+.strip { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px; margin-top: auto; }
+.strip .b { height: 6px; border-radius: 2px; background: var(--surface-2); }
+.strip .m { font-size: 9.5px; text-align: center; color: var(--muted); line-height: 1.2; padding-top: 2px; font-weight: 600; }
+.strip .m.now { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.empty { padding: 28px; text-align: center; color: var(--muted); border: 1.5px dashed var(--line); border-radius: 14px; }
+
+/* Later list */
+.later { margin-block: 20px 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+.later summary { cursor: pointer; font-weight: 700; font-size: 16px; list-style: none; display: flex; align-items: center; gap: 8px; }
+.later summary::-webkit-details-marker { display: none; }
+.later summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); transition: transform .15s; }
+.later[open] summary::before { transform: rotate(45deg); }
+.later-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 2px 18px; margin-top: 12px; }
+.later-list button { display: flex; justify-content: space-between; gap: 10px; border: 0; background: transparent; text-align: left; padding: 8px 4px; border-bottom: 1px solid var(--line); font-size: 14px; min-width: 0; }
+.later-list button:hover { background: var(--surface-2); }
+.later-list span:last-child { color: var(--muted); font-size: 13px; text-align: right; }
+
+/* Year planner */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); padding-block: 4px 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); margin-bottom: 12px; }
+table.year { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 720px; font-size: 13px; }
+table.year th, table.year td { padding: 0; border-bottom: 1px solid var(--line); }
+table.year thead th { position: sticky; top: 0; background: var(--surface); font-size: 11.5px; color: var(--muted); padding: 8px 2px; font-weight: 700; text-align: center; }
+table.year thead th.now { color: var(--accent); }
+table.year th.name { position: sticky; left: 0; z-index: 2; background: var(--surface); text-align: left; padding: 7px 10px; min-width: 150px; max-width: 190px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+table.year th.name button { border: 0; background: none; padding: 0; font-weight: 600; text-align: left; }
+table.year td { text-align: center; padding: 4px 2px; }
+.cell { display: grid; gap: 2px; }
+.cell i { height: 9px; border-radius: 2px; background: transparent; display: block; }
+table.year td.now { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+/* Climate */
+.climate { display: grid; gap: 16px; padding-block: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; min-width: 0; }
+.panel h3 { font-size: 18px; margin-bottom: 4px; }
+.panel p { margin: 0 0 10px; color: var(--muted); font-size: 13.5px; max-width: 70ch; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font-family: var(--font-body); font-size: 11px; }
+.ctable { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; min-width: 640px; }
+.ctable th, .ctable td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: right; }
+.ctable th:first-child, .ctable td:first-child { text-align: left; }
+.ctable thead th { color: var(--muted); font-size: 12px; }
+.ctable tr.now td { background: color-mix(in srgb, var(--accent) 8%, transparent); font-weight: 600; }
+
+/* Sheet */
+.scrim { position: fixed; inset: 0; background: rgba(10, 16, 12, .45); z-index: 50; }
+.sheet { position: fixed; z-index: 51; left: 0; right: 0; bottom: 0; max-height: 92%; background: var(--surface); border-radius: 20px 20px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,.25); overflow-y: auto; padding: 0 max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); animation: up .22s ease-out; }
+@media (min-width: 900px) { .sheet { left: auto; top: 0; bottom: 0; width: 520px; max-height: none; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); animation: slide .22s ease-out; } }
+@keyframes up { from { transform: translateY(30px); opacity: .6; } }
+@keyframes slide { from { transform: translateX(30px); opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .sheet, .card { animation: none; transition: none; } }
+.sheet-head { position: sticky; top: 0; background: var(--surface); padding: 14px 0 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; border-bottom: 1px solid var(--line); z-index: 1; }
+.sheet-head h2 { font-size: 26px; line-height: 1.15; }
+.close { border: 0; background: var(--surface-2); width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.sheet section { padding-top: 16px; }
+.sheet h4 { margin: 0 0 8px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sheet p { margin: 0 0 8px; max-width: 65ch; }
+.notes { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.fact { background: var(--bg); border-radius: 10px; padding: 9px 11px; min-width: 0; }
+.fact span { display: block; font-size: 11.5px; color: var(--muted); font-weight: 600; }
+.fact b { font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; }
+.packet { border: 1.5px dashed var(--line); border-radius: 12px; padding: 12px; }
+.packet .row { display: grid; grid-template-columns: 74px repeat(12, minmax(0, 1fr)); gap: 2px; align-items: center; }
+.packet .row + .row { margin-top: 4px; }
+.packet .row span { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.packet .row i { height: 14px; border-radius: 3px; background: var(--surface-2); display: block; }
+.packet .row em { font-style: normal; font-size: 10px; text-align: center; color: var(--muted); font-weight: 700; }
+.packet .row em.now { color: var(--accent); }
+.names { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--muted); }
+.names b { color: var(--ink); font-weight: 600; }
+.comp { display: flex; flex-wrap: wrap; gap: 6px; }
+.src { font-size: 12px; color: var(--muted); }
+
+/* Footer */
+footer { margin-top: 30px; border-top: 1px solid var(--line); padding-block: 20px 34px; color: var(--muted); font-size: 12.5px; }
+footer p { margin: 0 0 8px; max-width: 90ch; }
+footer a { color: inherit; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 60; max-width: calc(100% - 32px); }
+
+/* Year planner: compact on phones */
+table.year col.cname { width: 170px; }
+table.year th.name button { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.25; }
+table.year .mini { display: none; }
+@media (max-width: 640px) {
+  table.year { min-width: 0; table-layout: fixed; }
+  table.year col.cname { width: 92px; }
+  table.year th.name { min-width: 0; max-width: none; white-space: normal; padding: 6px 6px 6px 8px; font-size: 12.5px; }
+  table.year thead th { font-size: 10.5px; padding: 6px 0; }
+  table.year td { padding: 3px 1px; }
+  table.year .mfull { display: none; }
+  table.year .mini { display: inline; }
+  .cell i { height: 8px; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></symbol>
+  <symbol id="i-partsun" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.4"/><path d="M9 2.4v1.6M2.4 9h1.6M4.3 4.3l1.1 1.1M13.7 4.3l-1.1 1.1"/><path d="M8.5 19.5h9a3.6 3.6 0 0 0 .3-7.2 5 5 0 0 0-9.4 1.5 2.9 2.9 0 0 0 .1 5.7z"/></symbol>
+  <symbol id="i-partshade" viewBox="0 0 24 24"><path d="M12 21v-6"/><path d="M12 15c-4.5 0-7.5-2.6-7.5-6S8 3 12 3s7.5 2.6 7.5 6-3 6-7.5 6z"/><circle cx="19.5" cy="4.5" r="1.8"/></symbol>
+  <symbol id="i-shade" viewBox="0 0 24 24"><path d="M12 22v-5M7 22v-3M17 22v-3"/><path d="M12 17c-5 0-8.5-2.5-8.5-6.2C3.5 6.6 7.3 3 12 3s8.5 3.6 8.5 7.8C20.5 14.5 17 17 12 17z"/></symbol>
+  <symbol id="i-sow" viewBox="0 0 24 24"><path d="M4 18h16"/><path d="M8 18c0-2 1-3 2-3.5M16 18c0-2-1-3-2-3.5"/><ellipse cx="12" cy="10" rx="2.2" ry="3.2"/></symbol>
+  <symbol id="i-indoor" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M12 17v-3.5M12 13.5c0-1.6 1.2-2.6 2.8-2.6 0 1.6-1.2 2.6-2.8 2.6zM12 14.5c0-1.4-1-2.2-2.4-2.2 0 1.4 1 2.2 2.4 2.2z"/></symbol>
+  <symbol id="i-seedling" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-3.5 2.4-5.5 6-5.5 0 3.5-2.4 5.5-6 5.5zM12 14c0-3-2.1-4.8-5.2-4.8 0 3 2.1 4.8 5.2 4.8z"/><path d="M8 21h8"/></symbol>
+  <symbol id="i-plant" viewBox="0 0 24 24"><path d="M3 15h18"/><path d="M12 15v-3"/><path d="M8.5 19.5c0-2.2 1.6-3.6 3.5-3.6s3.5 1.4 3.5 3.6"/><path d="M12 12c0-2.6 1.8-4.2 4.5-4.2 0 2.6-1.8 4.2-4.5 4.2zM12 10c0-2.2-1.5-3.6-3.8-3.6 0 2.2 1.5 3.6 3.8 3.6z"/></symbol>
+  <symbol id="i-basket" viewBox="0 0 24 24"><path d="M4 10h16l-1.6 9.2a1.5 1.5 0 0 1-1.5 1.3H7.1a1.5 1.5 0 0 1-1.5-1.3z"/><path d="M8 10l3-6M16 10l-3-6M9.5 14v3M14.5 14v3"/></symbol>
+  <symbol id="i-frost" viewBox="0 0 24 24"><path d="M12 2.5v19M3.8 7.2l16.4 9.6M3.8 16.8l16.4-9.6M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5"/></symbol>
+  <symbol id="i-temp" viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v8"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.7a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="3" width="34" height="34" rx="10" fill="var(--accent)"/><path d="M20 31V19" stroke="var(--accent-ink)" stroke-width="2.4" stroke-linecap="round"/><path d="M20 20c0-5 3.4-8 8.5-8 0 5-3.4 8-8.5 8zM20 23c0-4.2-2.9-6.8-7.2-6.8 0 4.2 2.9 6.8 7.2 6.8z" fill="var(--accent-ink)"/></svg>
+      <div><h1>Sowtime</h1><p data-i18n="tagline"></p></div>
+    </div>
+    <div class="prefs">
+      <div class="seg" role="group" id="unitGroup">
+        <button id="u-c" type="button" aria-pressed="true">°C</button><button id="u-f" type="button" aria-pressed="false">°F</button>
+      </div>
+      <select id="lang" class="lang"></select>
+    </div>
+  </header>
+
+  <section class="setup" id="setup">
+    <div class="field">
+      <label for="q" data-i18n="where"></label>
+      <div class="search">
+        <div class="search-box">
+          <svg class="i"><use href="#i-search"/></svg>
+          <input id="q" type="search" autocomplete="off" data-i18n-ph="searchPh" aria-autocomplete="list" aria-controls="suggest" aria-expanded="false">
+          <button id="locate" class="btn-loc" type="button"><svg class="i"><use href="#i-locate"/></svg><span data-i18n="useLoc"></span></button>
+        </div>
+        <div id="suggest" class="suggest" role="listbox" hidden></div>
+      </div>
+      <div class="place-line" id="placeLine"></div>
+    </div>
+    <div class="field">
+      <div class="lbl" id="sunLbl" data-i18n="sunQ"></div>
+      <div class="suns" role="group" aria-labelledby="sunLbl" id="suns"></div>
+      <p class="hint" data-i18n="sunHint"></p>
+    </div>
+    <div class="field months-row">
+      <div class="lbl" id="monLbl" data-i18n="month"></div>
+      <div class="months" role="group" aria-labelledby="monLbl" id="months"></div>
+    </div>
+  </section>
+
+  <section class="summary" aria-live="polite" id="summary"></section>
+</div>
+
+<nav class="tabs" id="tabsNav">
+  <div class="wrap" role="tablist">
+    <button role="tab" id="t-now" aria-selected="true" aria-controls="v-now"><span data-i18n="tabNow"></span> <span class="count" id="nowCount">0</span></button>
+    <button role="tab" id="t-year" aria-selected="false" aria-controls="v-year" data-i18n="tabYear"></button>
+    <button role="tab" id="t-clim" aria-selected="false" aria-controls="v-clim" data-i18n="tabClim"></button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div class="filters" id="filters">
+    <div class="chips" id="catChips" role="group"></div>
+    <div class="chips" id="actChips" role="group"></div>
+    <label class="find"><svg class="i"><use href="#i-search"/></svg><input id="find" type="search" data-i18n-ph="findPh"></label>
+  </div>
+  <section id="v-now" role="tabpanel" aria-labelledby="t-now"></section>
+  <section id="v-year" role="tabpanel" aria-labelledby="t-year" hidden></section>
+  <section id="v-clim" role="tabpanel" aria-labelledby="t-clim" hidden></section>
+
+  <footer>
+    <p><strong data-i18n="footHowT"></strong> <span data-i18n="footHow"></span></p>
+    <p><strong data-i18n="footDataT"></strong> <span id="footData"></span></p>
+    <p id="sampleNote" data-i18n="sampleNote" hidden></p>
+  </footer>
+</main>
+
+<div id="sheetRoot"></div>
+
+<script>/*__ENGINE__*/</script>
+<script>
+var PLANTS = /*__PLANTS__*/[];
+var SAMPLES = /*__SAMPLES__*/[];
+var UI = /*__UI__*/{};
+</script>
+<script>
+(function () {
+  "use strict";
+  var E = window.Engine;
+  var LANGS = ["en", "de", "es", "fr", "it", "nl"];
+  var CATC = { vegetable: "var(--veg)", herb: "var(--herb)", fruit: "var(--fruit)", flower: "var(--flower)" };
+  var ACTS = { sow: { icon: "i-sow", c: "var(--sow)" }, indoor: { icon: "i-indoor", c: "var(--indoor)" },
+               seedling: { icon: "i-seedling", c: "var(--seedling)" }, plant: { icon: "i-plant", c: "var(--plant)" } };
+  var SUN_ICON = { full: "i-sun", part: "i-partsun", partshade: "i-partshade", shade: "i-shade" };
+  var PHOTON_LANGS = { en: "en", de: "de", fr: "fr", it: "it" };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function icon(id, cls) { return '<svg class="i' + (cls ? " " + cls : "") + '" aria-hidden="true"><use href="#' + id + '"/></svg>'; }
+  function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem("sowtime." + k)); localStorage.setItem("sowtime." + k, JSON.stringify(v)); } catch (e) { return null; } }
+  function wrapRange(a, b) { var out = [], m = a; for (var i = 0; i < 12; i++) { out.push(m); if (m === b) break; m = (m + 1) % 12; } return out; }
+
+  var now = new Date();
+  var S = {
+    month: now.getMonth(),
+    sun: store("sun") || "full",
+    unit: store("unit") || (/^en-US|^en-LR|^my/.test(navigator.language || "") ? "F" : "C"),
+    lang: store("lang") || ((navigator.language || "en").slice(0, 2).toLowerCase()),
+    place: store("place") || null,
+    climate: null, isSample: false,
+    tab: "now", cat: "all", act: "any", find: "",
+    liveOK: null
+  };
+  if (LANGS.indexOf(S.lang) < 0) S.lang = "en";
+
+  /* ---------- i18n ---------- */
+  function L() { return UI[S.lang] || UI.en; }
+  function T(key, vars) {
+    var s = L()[key]; if (s == null) s = UI.en[key]; if (s == null) return key;
+    if (vars) s = s.replace(/\{(\w+)\}/g, function (m, k) { return vars[k] != null ? vars[k] : m; });
+    return s;
+  }
+  function MON(i) { return L().mon[i]; }
+  function MONTH(i) { return L().months[i]; }
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function t(c) { return S.unit === "F" ? Math.round(c * 9 / 5 + 32) + "°F" : Math.round(c) + "°C"; }
+  function tNum(c) { return S.unit === "F" ? c * 9 / 5 + 32 : c; }
+  function degDiff(d) { return S.unit === "F" ? (d * 9 / 5).toFixed(1).replace(".0", "") : d.toFixed(1).replace(".0", ""); }
+  function temps(text) { return String(text || "").replace(/\{(-?\d+(?:\.\d+)?)\}/g, function (m, v) { return t(parseFloat(v)); }); }
+  function pname(p) { return p.n[S.lang] || p.n.en; }
+  function pdesc(p) { return (p.d && (p.d[S.lang] || p.d.en)) || ""; }
+  function ptip(p) { return temps((p.tip && (p.tip[S.lang] || p.tip.en)) || ""); }
+  function actLabel(type, short) { return type === "plant" && short ? T("act_plant_short") : T("act_" + type); }
+  function frostLabel(level) { return T("frost" + level); }
+
+  function applyStatic() {
+    document.documentElement.lang = S.lang;
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = T(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-ph]").forEach(function (el) { el.placeholder = T(el.getAttribute("data-i18n-ph")); });
+    $("locate").setAttribute("aria-label", T("useLoc"));
+    $("unitGroup").setAttribute("aria-label", T("unitLabel"));
+    $("lang").setAttribute("aria-label", T("langLabel"));
+    $("setup").setAttribute("aria-label", T("gardenLabel"));
+    $("tabsNav").setAttribute("aria-label", T("viewsLabel"));
+    $("catChips").setAttribute("aria-label", T("typeLabel"));
+    $("actChips").setAttribute("aria-label", T("taskLabel"));
+    $("find").setAttribute("aria-label", T("findPh"));
+    $("footData").innerHTML = esc(T("footData"))
+      .replace("{nasa}", '<a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">NASA POWER</a>')
+      .replace("{photon}", '<a href="https://photon.komoot.io/" target="_blank" rel="noopener">Photon</a>')
+      .replace("{osm}", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
+    var sel = $("lang");
+    if (!sel.options.length) sel.innerHTML = LANGS.map(function (l) { return '<option value="' + l + '">' + esc(UI[l].langName) + "</option>"; }).join("");
+    sel.value = S.lang;
+  }
+
+  /* ---------- climate sources ---------- */
+  function fromSample(s) {
+    var sunFrac = s.sun.map(function (h, m) { var dl = E.dayLength(s.lat, E.MID[m]); return Math.max(0.05, Math.min(0.95, h / (dl * E.DAYS[m]))); });
+    return { lat: s.lat, lon: s.lon, tmax: s.tmax, tmin: s.tmin, prcp: s.prcp, sunFrac: sunFrac, source: "sample" };
+  }
+  var NASA_KEYS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  function fetchClimate(lat, lon) {
+    var url = "https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,CLRSKY_SFC_SW_DWN&community=AG&longitude=" +
+      lon.toFixed(3) + "&latitude=" + lat.toFixed(3) + "&format=JSON";
+    var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 25000);
+    return fetch(url, ctl ? { signal: ctl.signal } : {}).then(function (r) {
+      clearTimeout(timer);
+      if (!r.ok) throw new Error("http " + r.status);
+      return r.json();
+    }).then(function (j) {
+      var P = j && j.properties && j.properties.parameter;
+      if (!P || !P.T2M_MAX) throw new Error("bad data");
+      function arr(k) { return NASA_KEYS.map(function (m) { var v = P[k] && P[k][m]; return (typeof v === "number" && v > -900) ? v : null; }); }
+      var tmax = arr("T2M_MAX"), tmin = arr("T2M_MIN"), pr = arr("PRECTOTCORR"), all = arr("ALLSKY_SFC_SW_DWN"), clr = arr("CLRSKY_SFC_SW_DWN");
+      if (tmax.some(function (v) { return v == null; }) || tmin.some(function (v) { return v == null; })) throw new Error("missing temps");
+      var sunFrac = all.map(function (a, m) { var c = clr[m]; if (a == null || c == null || c <= 0) return 0.45; return Math.max(0.05, Math.min(0.95, 1.5 * a / c - 0.5)); });
+      var prcp = pr.map(function (v, m) { return v == null ? 0 : v * E.DAYS[m]; });
+      return { lat: lat, lon: lon, tmax: tmax, tmin: tmin, prcp: prcp, sunFrac: sunFrac, source: "nasa" };
+    });
+  }
+  function photonLang() { var l = PHOTON_LANGS[S.lang]; return l ? "&lang=" + l : ""; }
+  function geocode(q) {
+    var url = "https://photon.komoot.io/api/?q=" + encodeURIComponent(q) + "&limit=8" + photonLang();
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); }).then(function (j) {
+      var seen = {}, out = [];
+      (j.features || []).forEach(function (f) {
+        var p = f.properties || {}, c = f.geometry && f.geometry.coordinates;
+        if (!c || !p.name) return;
+        var placeLike = p.osm_key === "place" || p.type === "city" || p.type === "district" || p.type === "locality" || p.type === "county" || p.type === "state";
+        var region = [p.state, p.country].filter(Boolean).filter(function (x) { return x !== p.name; }).join(", ");
+        var key = p.name + "|" + region;
+        if (seen[key]) return; seen[key] = 1;
+        out.push({ name: p.name, region: region, lat: c[1], lon: c[0], rank: placeLike ? 0 : 1 });
+      });
+      out.sort(function (a, b) { return a.rank - b.rank; });
+      return out.slice(0, 7);
+    });
+  }
+  function reverseGeocode(lat, lon) {
+    return fetch("https://photon.komoot.io/reverse?lat=" + lat + "&lon=" + lon + photonLang())
+      .then(function (r) { return r.json(); }).then(function (j) {
+        var p = (j.features && j.features[0] && j.features[0].properties) || {};
+        return { name: p.city || p.name || p.county || T("yourLocation"), region: [p.state, p.country].filter(Boolean).join(", ") };
+      }).catch(function () { return { name: T("yourLocation"), region: lat.toFixed(2) + ", " + lon.toFixed(2) }; });
+  }
+
+  /* ---------- state ---------- */
+  var G = null, PLAN = {}, planKey = "", loadState = null;
+  function recompute() {
+    if (!S.climate) { G = null; return; }
+    G = E.gardenClimate(S.climate, S.sun);
+    var key = S.place.lat + "," + S.place.lon + "," + S.sun;
+    if (key !== planKey) { PLAN = {}; planKey = key; }
+  }
+  function planFor(p) { if (!PLAN[p.id]) PLAN[p.id] = E.yearPlan(p, G); return PLAN[p.id]; }
+
+  function setPlace(pl) {
+    S.place = { name: pl.name, region: pl.region || "", lat: pl.lat, lon: pl.lon, sample: !!pl.sample };
+    $("q").value = "";
+    closeSuggest();
+    var sample = pl.sample ? SAMPLES.find(function (s) { return s.name === pl.name; }) : null;
+    if (sample) { S.climate = fromSample(sample); S.isSample = true; loadState = null; store("place", S.place); recompute(); renderAll(); return; }
+    var ck = "clim:" + pl.lat.toFixed(2) + "," + pl.lon.toFixed(2), cached = store(ck);
+    if (cached && cached.tmax) { S.climate = cached; S.isSample = false; loadState = null; store("place", S.place); recompute(); renderAll(); return; }
+    S.climate = null; G = null; S.isSample = false; loadState = "loading";
+    renderAll();
+    fetchClimate(pl.lat, pl.lon).then(function (c) {
+      S.liveOK = true; S.climate = c; S.isSample = false; loadState = null;
+      store(ck, c); store("place", S.place);
+      recompute(); renderAll();
+    }).catch(function () { loadState = "error"; renderAll(); });
+  }
+
+  /* ---------- setup ---------- */
+  function renderSuns() {
+    $("suns").innerHTML = Object.keys(E.SUN_OPTIONS).map(function (k) {
+      return '<button type="button" class="sun-opt" data-sun="' + k + '" aria-pressed="' + (S.sun === k) + '">' + icon(SUN_ICON[k]) +
+        "<b>" + esc(T("sun_" + k)) + "</b><span>" + esc(T("sun_" + k + "_h")) + "</span></button>";
+    }).join("");
+  }
+  function renderMonths() {
+    var h = ""; for (var i = 0; i < 12; i++) h += '<button type="button" data-month="' + i + '" aria-pressed="' + (S.month === i) + '" aria-label="' + esc(MONTH(i)) + '">' + esc(cap(MON(i))) +
+      "<small>" + (i === now.getMonth() ? esc(T("now")) : "") + "</small></button>";
+    $("months").innerHTML = h;
+  }
+  function renderPlaceLine() {
+    var el = $("placeLine");
+    if (!S.place) { el.innerHTML = ""; return; }
+    el.innerHTML = icon("i-pin") + "<strong>" + esc(S.place.name) + "</strong>" + (S.place.region ? "<span>" + esc(S.place.region) + "</span>" : "") +
+      (S.isSample ? '<span class="pill-demo">' + esc(T("sampleCity")) + "</span>" : "") +
+      "<span>· " + Math.abs(S.place.lat).toFixed(1) + "°" + (S.place.lat >= 0 ? "N" : "S") + " " + Math.abs(S.place.lon).toFixed(1) + "°" + (S.place.lon >= 0 ? "E" : "W") + "</span>";
+    $("sampleNote").hidden = !S.isSample;
+  }
+
+  /* ---------- search ---------- */
+  var sugItems = [], sugIdx = -1, searchTimer = null, searchSeq = 0;
+  function sampleMatches(q) {
+    q = q.trim().toLowerCase();
+    return SAMPLES.filter(function (s) { return !q || s.name.toLowerCase().indexOf(q) === 0 || s.region.toLowerCase().indexOf(q) === 0; })
+      .map(function (s) { return { name: s.name, region: s.region, lat: s.lat, lon: s.lon, sample: true }; });
+  }
+  function showSuggest(items, note) {
+    sugItems = items; sugIdx = -1;
+    var html = items.map(function (it, i) {
+      return '<button type="button" role="option" data-i="' + i + '">' + icon("i-pin") + "<span><span>" + esc(it.name) + "</span><br><small>" + esc(it.region) + "</small></span>" +
+        (it.sample ? '<span class="tag">' + esc(T("sampleTag")) + "</span>" : "") + "</button>";
+    }).join("");
+    if (note) html += '<div class="note">' + esc(note) + "</div>";
+    if (!html) html = '<div class="note">' + esc(T("noPlaces")) + "</div>";
+    var box = $("suggest"); box.innerHTML = html; box.hidden = false; $("q").setAttribute("aria-expanded", "true");
+  }
+  function closeSuggest() { $("suggest").hidden = true; $("q").setAttribute("aria-expanded", "false"); }
+  function onSearchInput() {
+    var q = $("q").value.trim();
+    clearTimeout(searchTimer);
+    var local = sampleMatches(q);
+    if (q.length < 2) { showSuggest(local.slice(0, 22), S.liveOK === false ? T("liveOffPreview") : T("typeMore")); return; }
+    showSuggest(local.slice(0, 4), T("searching"));
+    var seq = ++searchSeq;
+    searchTimer = setTimeout(function () {
+      geocode(q).then(function (res) {
+        if (seq !== searchSeq) return;
+        S.liveOK = true;
+        var names = {}; res.forEach(function (r) { names[r.name + r.region] = 1; });
+        showSuggest(res.concat(local.filter(function (l) { return !names[l.name + l.region]; }).slice(0, 3)), res.length ? "" : T("noMatch"));
+      }).catch(function () {
+        if (seq !== searchSeq) return;
+        S.liveOK = false;
+        showSuggest(local.length ? local : sampleMatches(""), T("liveOff"));
+      });
+    }, 280);
+  }
+
+  /* ---------- summary ---------- */
+  function renderSummary() {
+    var el = $("summary");
+    if (loadState === "loading") { el.innerHTML = '<p class="status">' + esc(T("loading", { place: S.place.name })) + "</p>"; return; }
+    if (loadState === "error") {
+      el.innerHTML = '<p class="status err">' + esc(T("loadErr", { place: S.place.name })) + ' <button type="button" class="chip" id="retry">' + esc(T("retry")) + "</button></p>";
+      return;
+    }
+    if (!G) { el.innerHTML = '<p class="status">' + esc(T("searchPrompt")) + "</p>"; return; }
+    var m = S.month, fr = E.frostRisk(G.tmin[m]);
+    var lead = esc(T("monthIn", { month: "\u0000", place: "\u0001" })).replace("\u0000", esc(cap(MONTH(m)))).replace("\u0001", "<em>" + esc(S.place.name) + "</em>");
+    var hem = S.place.lat < 0 ? T("southern") : "";
+    var sh = G.shiftMax < 0 ? T("cooler", { n: degDiff(Math.abs(G.shiftMax)) }) : G.shiftMax > 0 ? T("warmer", { n: degDiff(G.shiftMax) }) : "";
+    var clearH = Math.min(G.sunHours * G.dl[m] / Math.max.apply(null, G.dl), G.dl[m]);
+    el.innerHTML = "<h2>" + lead + "</h2>" +
+      '<div class="stats">' +
+      stat("i-temp", T("statDayNight"), t(G.tmax[m]) + " / " + t(G.tmin[m]), T("statAvg", { t: t(G.tmean[m]) })) +
+      stat("i-frost", T("statFrost"), '<span class="chip-frost lv' + fr.level + '">' + esc(frostLabel(fr.level)) + "</span>", frostSpan()) +
+      stat("i-drop", T("statRain"), Math.round(G.prcp[m]) + " mm", rainWord(G.prcp[m])) +
+      stat(SUN_ICON[S.sun], T("statSun"), G.gardenSun[m].toFixed(1) + " " + esc(T("hDay")), T("sunSub", { h: clearH.toFixed(1) })) +
+      "</div>" + ((hem || sh) ? '<p class="status">' + esc([hem, sh].filter(Boolean).join(" ")) + "</p>" : "");
+  }
+  function stat(ic, k, v, s) { return '<div class="stat"><div class="k">' + icon(ic) + esc(k) + '</div><div class="v">' + v + '</div><div class="s">' + esc(s) + "</div></div>"; }
+  function rainWord(mm) { return T("rain" + (mm < 15 ? 0 : mm < 40 ? 1 : mm < 100 ? 2 : mm < 200 ? 3 : 4)); }
+  function frostSpan() {
+    var fm = []; for (var i = 0; i < 12; i++) if (G.tmin[i] <= 2) fm.push(i);
+    if (!fm.length) return T("frostNone");
+    if (fm.length === 12) return T("frostAll");
+    var start = fm.find(function (i) { return G.tmin[(i + 11) % 12] > 2; });
+    var end = fm.find(function (i) { return G.tmin[(i + 1) % 12] > 2; });
+    return T("frostMonths", { range: cap(MON(start)) + (start !== end ? "–" + cap(MON(end)) : "") });
+  }
+
+  /* ---------- plant now ---------- */
+  function matchesFilters(p) {
+    if (S.cat !== "all" && p.cat !== S.cat) return false;
+    if (S.find) {
+      var q = S.find.toLowerCase();
+      var hay = (p.n.en + " " + pname(p) + " " + p.bin).toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  }
+  function actionsNow(p) {
+    var e = planFor(p)[S.month];
+    if (!e.actions.length || e.why) return null;
+    var acts = e.actions;
+    if (S.act !== "any") acts = acts.filter(function (a) { return a.type === S.act; });
+    if (!acts.length) return null;
+    return { e: e, acts: acts };
+  }
+  function harvestText(p, acts) {
+    var a = acts.find(function (x) { return x.from != null; });
+    var fl = p.cat === "flower";
+    if (!a) {
+      var d = p.dtm[0];
+      if (d >= 700) return esc(T("harvestYears", { n: Math.round(d / 365) }));
+      if (d >= 300) return esc(T(fl ? "flowersNextYear" : "harvestNextYear"));
+      return esc(T(fl ? "flowersMonths" : "harvestMonths", { n: Math.max(1, Math.round(d / 30)) }));
+    }
+    return esc(T(fl ? "flowersLabel" : "harvestLabel")) + " <b>" + esc(cap(MON(a.from))) + (a.to !== a.from ? "–" + esc(cap(MON(a.to))) : "") + "</b>";
+  }
+  function stripBars(p) {
+    var plan = planFor(p), sow = new Array(12).fill(null), harv = new Array(12).fill(false);
+    plan.forEach(function (e, m) {
+      if (!e.actions.length || e.why) return;
+      sow[m] = e.actions[0].type;
+      e.actions.forEach(function (a) { if (a.from != null) wrapRange(a.from, a.to).forEach(function (h) { harv[h] = true; }); });
+    });
+    return { sow: sow, harv: harv };
+  }
+  function card(p, an) {
+    var q = an.e.q, r = E.rating(q), bars = stripBars(p);
+    var alt = pname(p) !== p.n.en && S.lang !== "en" ? "" : "";
+    var acts = an.acts.map(function (a) {
+      var extra = a.type === "indoor" && a.plantOut != null ? ", " + T("plantOutShort", { month: MON(a.plantOut) }) : "";
+      return '<span class="act" style="--a:' + ACTS[a.type].c + '">' + icon(ACTS[a.type].icon) + esc(actLabel(a.type, true) + extra) + "</span>";
+    }).join("");
+    var strip = "", m;
+    for (m = 0; m < 12; m++) strip += '<i class="b" style="background:' + (bars.sow[m] ? ACTS[bars.sow[m]].c : "var(--surface-2)") + '"></i>';
+    for (m = 0; m < 12; m++) strip += '<i class="b" style="height:4px;background:' + (bars.harv[m] ? "var(--harvest)" : "transparent") + '"></i>';
+    for (m = 0; m < 12; m++) strip += '<span class="m' + (m === S.month ? " now" : "") + '">' + esc(MON(m).charAt(0).toUpperCase()) + "</span>";
+    return '<button type="button" class="card" data-id="' + p.id + '" style="--c:' + CATC[p.cat] + '">' +
+      '<div class="card-h"><div><h3>' + esc(pname(p)) + '</h3><div class="sub">' + esc(alt) + "<i>" + esc(p.bin) + '</i></div></div><span class="rate ' + r + '">' + esc(T(r)) + "</span></div>" +
+      '<div class="acts">' + acts + "</div>" +
+      '<div class="harv">' + icon("i-basket") + "<span>" + harvestText(p, an.acts) + "</span></div>" +
+      '<div class="strip" aria-hidden="true">' + strip + "</div></button>";
+  }
+  function notNowText(p) {
+    var ex = E.explain(p, G, S.month, planFor(p));
+    if (ex.next != null) return { txt: T("fromMonth", { action: actLabel(ex.action, true), month: MONTH(ex.next) }), soon: (ex.next - S.month + 12) % 12, ex: ex };
+    return { txt: T("why_" + ex.why) !== "why_" + ex.why ? T("why_" + ex.why) : T("why_none"), soon: 99, ex: ex };
+  }
+  function renderNow() {
+    var el = $("v-now");
+    if (!G) { el.innerHTML = ""; $("nowCount").textContent = "0"; return; }
+    var yes = [], no = [];
+    PLANTS.forEach(function (p) {
+      if (!matchesFilters(p)) return;
+      var an = actionsNow(p);
+      if (an) yes.push({ p: p, an: an }); else no.push(p);
+    });
+    var order = { vegetable: 0, herb: 1, fruit: 2, flower: 3 }, rk = { ideal: 0, good: 1, possible: 2 };
+    yes.sort(function (a, b) { return (rk[E.rating(a.an.e.q)] - rk[E.rating(b.an.e.q)]) || (order[a.p.cat] - order[b.p.cat]) || (E.isPerennialMode(a.p) - E.isPerennialMode(b.p)) || pname(a.p).localeCompare(pname(b.p)); });
+    $("nowCount").textContent = yes.length;
+    var html = yes.length ? '<div class="grid">' + yes.map(function (x) { return card(x.p, x.an); }).join("") + "</div>"
+      : '<div class="empty">' + esc(T("emptyNow")) + "</div>";
+    if (no.length) {
+      var rows = no.map(function (p) { var r = notNowText(p); r.p = p; return r; })
+        .sort(function (a, b) { return a.soon - b.soon || pname(a.p).localeCompare(pname(b.p)); });
+      html += '<details class="later"' + (yes.length ? "" : " open") + "><summary>" + esc(T("notThisMonth", { n: no.length })) + '</summary><div class="later-list">' +
+        rows.map(function (r) { return '<button type="button" data-id="' + r.p.id + '"><span>' + esc(pname(r.p)) + "</span><span>" + esc(r.txt) + "</span></button>"; }).join("") +
+        "</div></details>";
+    }
+    el.innerHTML = html;
+  }
+
+  /* ---------- year planner ---------- */
+  function legend() {
+    return '<div class="legend">' + Object.keys(ACTS).map(function (k) { return '<span><i style="background:' + ACTS[k].c + '"></i>' + esc(actLabel(k, true)) + "</span>"; }).join("") +
+      '<span><i style="background:var(--harvest);height:5px"></i>' + esc(T("legendHarvest")) + "</span></div>";
+  }
+  function renderYear() {
+    var el = $("v-year");
+    if (!G) { el.innerHTML = ""; return; }
+    var list = PLANTS.filter(matchesFilters).sort(function (a, b) { return pname(a).localeCompare(pname(b)); });
+    var head = '<tr><th class="name">' + esc(T("plant")) + "</th>";
+    for (var i = 0; i < 12; i++) head += '<th class="' + (i === S.month ? "now" : "") + '" title="' + esc(MONTH(i)) + '"><span class="mfull">' + esc(cap(MON(i))) + '</span><span class="mini">' + esc(MON(i).charAt(0).toUpperCase()) + "</span></th>";
+    head += "</tr>";
+    var body = list.map(function (p) {
+      var bars = stripBars(p);
+      return '<tr><th class="name"><button type="button" data-id="' + p.id + '">' + esc(pname(p)) + "</button></th>" +
+        bars.sow.map(function (s, m) {
+          return '<td class="' + (m === S.month ? "now" : "") + '"><div class="cell"><i style="background:' + (s ? ACTS[s].c : "transparent") + '"></i><i style="height:5px;background:' + (bars.harv[m] ? "var(--harvest)" : "transparent") + '"></i></div></td>';
+        }).join("") + "</tr>";
+    }).join("");
+    el.innerHTML = legend() +
+      (list.length ? '<div class="tablewrap"><table class="year"><colgroup><col class="cname">' + new Array(13).join("<col>") + "</colgroup><thead>" + head + "</thead><tbody>" + body + "</tbody></table></div>" : '<div class="empty">' + esc(T("noMatchFilters")) + "</div>");
+  }
+
+  /* ---------- climate ---------- */
+  function renderClimate() {
+    var el = $("v-clim");
+    if (!G) { el.innerHTML = ""; return; }
+    var narrow = (el.clientWidth || window.innerWidth) < 640;
+    var W = narrow ? 380 : 720, H = narrow ? 260 : 300, L0 = 34, R = narrow ? 30 : 40, T0 = 16, B = 30;
+    var ML = function (i) { return narrow ? MON(i).charAt(0).toUpperCase() : cap(MON(i)); };
+    var all = G.tmax.concat(G.tmin).map(tNum);
+    var step = S.unit === "F" ? 10 : 5;
+    var lo = Math.floor((Math.min.apply(null, all.concat([tNum(0)])) - step) / step) * step, hi = Math.ceil((Math.max.apply(null, all) + step) / step) * step;
+    var pmax = Math.max(50, Math.ceil(Math.max.apply(null, G.prcp) / 50) * 50);
+    var x = function (i) { return L0 + (i + 0.5) * (W - L0 - R) / 12; };
+    var y = function (v) { return T0 + (hi - v) * (H - T0 - B) / (hi - lo); };
+    var yp = function (v) { return H - B - v * (H - T0 - B) * 0.45 / pmax; };
+    var bw = (W - L0 - R) / 12 * 0.5, i, v;
+    var nowStyle = ' style="font-weight:700;fill:var(--ink)"';
+    var s = '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(T("chartTempTitle")) + '">';
+    for (v = lo; v <= hi; v += step) s += '<line x1="' + L0 + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--line)" stroke-width="1"/><text x="' + (L0 - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + "°</text>";
+    var z = tNum(0);
+    if (z > lo && z < hi) s += '<rect x="' + L0 + '" y="' + y(z) + '" width="' + (W - L0 - R) + '" height="' + (y(lo) - y(z)) + '" fill="var(--frost)" opacity=".08"/><line x1="' + L0 + '" x2="' + (W - R) + '" y1="' + y(z) + '" y2="' + y(z) + '" stroke="var(--frost)" stroke-dasharray="4 4"/>';
+    for (i = 0; i < 12; i++) {
+      s += '<rect x="' + (x(i) - bw / 2) + '" y="' + yp(G.prcp[i]) + '" width="' + bw + '" height="' + (H - B - yp(G.prcp[i])) + '" rx="2" fill="var(--indoor)" opacity=".28"/>';
+      if (i === S.month) s += '<rect x="' + (x(i) - (W - L0 - R) / 24) + '" y="' + T0 + '" width="' + ((W - L0 - R) / 12) + '" height="' + (H - T0 - B) + '" fill="var(--accent)" opacity=".07"/>';
+      s += '<text x="' + x(i) + '" y="' + (H - 12) + '" text-anchor="middle"' + (i === S.month ? nowStyle : "") + ">" + esc(ML(i)) + "</text>";
+    }
+    var pt = function (arr) { return arr.map(function (v, i) { return x(i) + "," + y(tNum(v)); }); };
+    s += '<polygon points="' + pt(G.tmax).join(" ") + " " + pt(G.tmin).reverse().join(" ") + '" fill="var(--sun)" opacity=".18"/>';
+    s += '<polyline points="' + pt(G.tmax).join(" ") + '" fill="none" stroke="var(--hot)" stroke-width="2.2"/>';
+    s += '<polyline points="' + pt(G.tmin).join(" ") + '" fill="none" stroke="var(--frost)" stroke-width="2.2"/>';
+    for (i = 0; i < 12; i++) {
+      s += '<circle cx="' + x(i) + '" cy="' + y(tNum(G.tmax[i])) + '" r="' + (i === S.month ? 4.5 : 2.6) + '" fill="var(--hot)"/>';
+      s += '<circle cx="' + x(i) + '" cy="' + y(tNum(G.tmin[i])) + '" r="' + (i === S.month ? 4.5 : 2.6) + '" fill="var(--frost)"/>';
+    }
+    s += '<text x="' + (W - R + 6) + '" y="' + (yp(pmax) + 4) + '">' + pmax + '</text><text x="' + (W - R + 6) + '" y="' + (H - B + 4) + '">' + (narrow ? "0" : "0 mm") + "</text></svg>";
+
+    var maxSun = Math.ceil(Math.max.apply(null, G.openSun.concat([1])));
+    var H2 = narrow ? 150 : 170, T2 = 14, B2 = 28;
+    var ys = function (v) { return H2 - B2 - v * (H2 - T2 - B2) / maxSun; };
+    var s2 = '<svg class="chart" viewBox="0 0 ' + W + " " + H2 + '" role="img" aria-label="' + esc(T("sunTitle")) + '">';
+    for (var hv = 0; hv <= maxSun; hv += 2) s2 += '<line x1="' + L0 + '" x2="' + (W - R) + '" y1="' + ys(hv) + '" y2="' + ys(hv) + '" stroke="var(--line)"/><text x="' + (L0 - 6) + '" y="' + (ys(hv) + 4) + '" text-anchor="end">' + hv + "h</text>";
+    for (i = 0; i < 12; i++) {
+      s2 += '<rect x="' + (x(i) - bw / 2) + '" y="' + ys(G.openSun[i]) + '" width="' + bw + '" height="' + (H2 - B2 - ys(G.openSun[i])) + '" rx="2" fill="var(--sun)" opacity=".25"/>';
+      s2 += '<rect x="' + (x(i) - bw / 2) + '" y="' + ys(G.gardenSun[i]) + '" width="' + bw + '" height="' + (H2 - B2 - ys(G.gardenSun[i])) + '" rx="2" fill="var(--sun)"/>';
+      s2 += '<text x="' + x(i) + '" y="' + (H2 - 10) + '" text-anchor="middle"' + (i === S.month ? nowStyle : "") + ">" + esc(ML(i)) + "</text>";
+    }
+    s2 += "</svg>";
+
+    var rows = "";
+    for (i = 0; i < 12; i++) {
+      var fr = E.frostRisk(G.tmin[i]);
+      rows += '<tr class="' + (i === S.month ? "now" : "") + '"><td>' + esc(cap(MONTH(i))) + "</td><td>" + t(G.tmin[i]) + "</td><td>" + t(G.tmean[i]) + "</td><td>" + t(G.tmax[i]) + "</td><td>" + Math.round(G.prcp[i]) +
+        " mm</td><td>" + G.gardenSun[i].toFixed(1) + " h</td><td>" + G.dl[i].toFixed(1) + " h</td><td>" + esc(frostLabel(fr.level)) + "</td></tr>";
+    }
+    var th = ["thMonth", "thLow", "thAvg", "thHigh", "thRain", "thSun", "thDay", "thFrost"].map(function (k) { return "<th>" + esc(T(k)) + "</th>"; }).join("");
+    el.innerHTML = '<div class="climate">' +
+      '<div class="panel"><h3>' + esc(T("chartTempTitle")) + "</h3><p>" + esc(T("chartTempDesc")) + (G.shiftMax ? " " + esc(T("adjNote", { n: (G.shiftMax > 0 ? "+" : "−") + degDiff(Math.abs(G.shiftMax)) })) : "") + "</p>" + s + "</div>" +
+      '<div class="panel"><h3>' + esc(T("sunTitle")) + "</h3><p>" + esc(T("sunDesc")) + "</p>" + s2 + "</div>" +
+      '<div class="panel"><h3>' + esc(T("tableTitle")) + "</h3><p>" + esc(T(S.isSample ? "srcSample" : "srcNasa")) + '</p><div style="overflow-x:auto"><table class="ctable"><thead><tr>' + th + "</tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
+      "</div>";
+  }
+
+  /* ---------- detail sheet ---------- */
+  var lastFocus = null, openId = null;
+  function openPlant(id, keepFocus) {
+    var p = PLANTS.find(function (x) { return x.id === id; });
+    if (!p || !G) return;
+    if (!keepFocus) lastFocus = document.activeElement;
+    openId = id;
+    var plan = planFor(p), e = plan[S.month], bars = stripBars(p);
+    var nowHtml;
+    if (e.actions.length && !e.why) {
+      nowHtml = '<div class="acts">' + e.actions.map(function (a) {
+        var extra = a.type === "indoor" && a.plantOut != null ? ", " + T("plantOutLong", { month: MONTH(a.plantOut) }) : "";
+        return '<span class="act" style="--a:' + ACTS[a.type].c + '">' + icon(ACTS[a.type].icon) + esc(actLabel(a.type) + extra) + "</span>";
+      }).join("") + '</div><p class="harv" style="margin-top:8px">' + icon("i-basket") + "<span>" + harvestText(p, e.actions) + "</span></p>";
+    } else {
+      var ex = E.explain(p, G, S.month, plan);
+      nowHtml = "<p>" + (ex.next != null
+        ? esc(T("notNow", { action: "\u0000", month: MONTH(ex.next) })).replace("&lt;b&gt;\u0000&lt;/b&gt;", "<b>" + esc(actLabel(ex.action)) + "</b>")
+        : esc(T("why_" + ex.why) !== "why_" + ex.why ? T("why_" + ex.why) : T("notSuited"))) + "</p>";
+    }
+    var notes = (e.notes || []).map(function (k) { return T(k); });
+    var tip = ptip(p); if (tip) notes.push(tip);
+    var row = function (label, arr, colorFn) { return '<div class="row"><span>' + esc(label) + "</span>" + arr.map(function (v) { return '<i style="background:' + colorFn(v) + '"></i>'; }).join("") + "</div>"; };
+    var letters = ""; for (var i = 0; i < 12; i++) letters += '<em class="' + (i === S.month ? "now" : "") + '">' + esc(MON(i).charAt(0).toUpperCase()) + "</em>";
+    var packet = '<div class="packet">' +
+      row(T("sowPlant"), bars.sow, function (v) { return v ? ACTS[v].c : "var(--surface-2)"; }) +
+      row(T(p.cat === "flower" ? "flowersLabel" : "harvestLabel"), bars.harv, function (v) { return v ? "var(--harvest)" : "var(--surface-2)"; }) +
+      '<div class="row"><span></span>' + letters + "</div></div>" + legend();
+    var germ = p.germ ? T("germMinBest", { a: t(p.germ[0]), b: t(p.germ[1]), c: t(p.germ[2]) }) : (p.soilMin != null ? T("soilPlant", { t: t(p.soilMin) }) : T("fromPlants"));
+    var facts = [
+      [T("fSun"), T("need_" + p.sun)], [T("fFrost"), T("frost_" + p.frost) + " · " + T("frostTo", { t: t(p.minSurvive) })],
+      [T("fGrow"), t(p.grow[1]) + "–" + t(p.grow[2])], [T("fGerm"), germ],
+      [T(p.cat === "flower" ? "fDaysFl" : "fDays"), T("dtmFrom_" + p.dtmFrom, { a: p.dtm[0], b: p.dtm[1] })],
+      [T("fSpacing"), p.spacing ? p.spacing + " cm" : "–"], [T("fHeight"), p.height ? p.height + " cm" : "–"],
+      [T("fCycle"), T("cycle_" + p.cycle) + (p.edible ? " · " + T("edible", { part: T("part_" + p.edible) }) : "")]
+    ];
+    if (p.indoorWeeks) facts.splice(5, 0, [T("fIndoor"), T("weeks", { n: p.indoorWeeks })]);
+    var others = LANGS.filter(function (l) { return l !== S.lang && p.n[l]; }).map(function (l) { return "<span><b>" + l.toUpperCase() + "</b> " + esc(p.n[l]) + "</span>"; }).join("");
+    var comps = (p.comp || []).map(function (cid) { var c = PLANTS.find(function (x) { return x.id === cid; }); return c ? '<button type="button" class="chip" data-id="' + c.id + '">' + esc(pname(c)) + "</button>" : ""; }).join("");
+    var desc = pdesc(p);
+    var html = '<div class="scrim" data-close="1"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">' +
+      '<div class="sheet-head"><div><div class="sub" style="color:' + CATC[p.cat] + ';font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:11.5px">' + esc(T("one_" + p.cat)) + " · " + esc(p.fam) + '</div><h2 id="sheetTitle">' + esc(pname(p)) + '</h2><div class="sub"><i>' + esc(p.bin) + '</i></div></div><button type="button" class="close" data-close="1" aria-label="' + esc(T("close")) + '">' + icon("i-x") + "</button></div>" +
+      "<section><h4>" + esc(T("inPlace", { month: cap(MONTH(S.month)), place: S.place.name })) + "</h4>" + nowHtml + "</section>" +
+      "<section><h4>" + esc(T("yourYear")) + "</h4>" + packet + "</section>" +
+      (notes.length ? "<section><h4>" + esc(T("tips")) + '</h4><ul class="notes">' + notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul></section>" : "") +
+      (desc ? "<section><h4>" + esc(T("about")) + "</h4><p>" + esc(desc) + "</p></section>" : "") +
+      "<section><h4>" + esc(T("needs")) + '</h4><div class="facts">' + facts.map(function (f) { return '<div class="fact"><span>' + esc(f[0]) + "</span><b>" + esc(f[1]) + "</b></div>"; }).join("") + "</div></section>" +
+      (comps ? "<section><h4>" + esc(T("companions")) + '</h4><div class="comp">' + comps + '</div><p class="src" style="margin-top:6px">' + esc(T("compSrc")) + "</p></section>" : "") +
+      "<section><h4>" + esc(T("alsoCalled")) + '</h4><div class="names">' + others + "</div></section>" +
+      "</div>";
+    $("sheetRoot").innerHTML = html;
+    document.body.style.overflow = "hidden";
+    var c = $("sheetRoot").querySelector(".close"); if (c && !keepFocus) c.focus();
+  }
+  function closeSheet() {
+    if (!$("sheetRoot").innerHTML) return;
+    $("sheetRoot").innerHTML = ""; document.body.style.overflow = ""; openId = null;
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  /* ---------- filters ---------- */
+  function renderFilters() {
+    var cats = [["all", T("catAll"), null]].concat(Object.keys(CATC).map(function (k) { return [k, T("cat_" + k), CATC[k]]; }));
+    $("catChips").innerHTML = cats.map(function (c) {
+      return '<button type="button" class="chip" data-cat="' + c[0] + '" aria-pressed="' + (S.cat === c[0]) + '">' + (c[2] ? '<span class="dot" style="background:' + c[2] + '"></span>' : "") + esc(c[1]) + "</button>";
+    }).join("");
+    var acts = [["any", T("actAny")]].concat(Object.keys(ACTS).map(function (k) { return [k, actLabel(k, true)]; }));
+    $("actChips").innerHTML = acts.map(function (a) { return '<button type="button" class="chip" data-act="' + a[0] + '" aria-pressed="' + (S.act === a[0]) + '">' + esc(a[1]) + "</button>"; }).join("");
+    $("actChips").hidden = S.tab !== "now";
+    $("filters").hidden = S.tab === "clim";
+  }
+
+  function renderAll() {
+    applyStatic();
+    renderPlaceLine(); renderSuns(); renderMonths(); renderFilters();
+    renderSummary();
+    if (S.tab === "now") renderNow(); else if (S.tab === "year") renderYear(); else renderClimate();
+    if (S.tab !== "now") {
+      if (G) { var n = 0; PLANTS.forEach(function (p) { if (matchesFilters(p) && actionsNow(p)) n++; }); $("nowCount").textContent = n; }
+      $("v-now").innerHTML = "";
+    }
+    if (!G) { $("v-year").innerHTML = ""; $("v-clim").innerHTML = ""; }
+    ["now", "year", "clim"].forEach(function (k) { $("v-" + k).hidden = S.tab !== k; $("t-" + k).setAttribute("aria-selected", String(S.tab === k)); });
+    $("u-c").setAttribute("aria-pressed", String(S.unit === "C")); $("u-f").setAttribute("aria-pressed", String(S.unit === "F"));
+    if (openId) openPlant(openId, true);
+  }
+
+  var toastTimer;
+  function toast(msg) {
+    var el = document.querySelector(".toast"); if (!el) { el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+    el.textContent = msg; clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.remove(); }, 4200);
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest("button, [data-close]");
+    if (!b) { if (!ev.target.closest(".search")) closeSuggest(); return; }
+    if (b.dataset.close) { closeSheet(); return; }
+    if (b.dataset.sun) { S.sun = b.dataset.sun; store("sun", S.sun); recompute(); renderAll(); return; }
+    if (b.dataset.month != null) { S.month = +b.dataset.month; renderAll(); return; }
+    if (b.dataset.cat) { S.cat = b.dataset.cat; renderAll(); return; }
+    if (b.dataset.act) { S.act = b.dataset.act; renderAll(); return; }
+    if (b.dataset.i != null && b.closest("#suggest")) { setPlace(sugItems[+b.dataset.i]); return; }
+    if (b.dataset.id) { var inSheet = !!b.closest(".sheet"); openPlant(b.dataset.id, inSheet); return; }
+    if (b.id === "retry" && S.place) { setPlace(S.place); return; }
+    if (b.id === "u-c" || b.id === "u-f") { S.unit = b.id === "u-c" ? "C" : "F"; store("unit", S.unit); renderAll(); return; }
+    if (b.getAttribute("role") === "tab") { S.tab = b.id.slice(2); renderAll(); return; }
+    if (b.id === "locate") { locate(); return; }
+    if (!b.closest(".search")) closeSuggest();
+  });
+  $("q").addEventListener("input", onSearchInput);
+  $("q").addEventListener("focus", function () { onSearchInput(); });
+  $("q").addEventListener("keydown", function (ev) {
+    var box = $("suggest"); if (box.hidden) return;
+    var btns = box.querySelectorAll("button");
+    if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+      ev.preventDefault(); if (!btns.length) return; sugIdx = (sugIdx + (ev.key === "ArrowDown" ? 1 : -1) + btns.length) % btns.length;
+      btns.forEach(function (x, i) { x.classList.toggle("on", i === sugIdx); });
+    } else if (ev.key === "Enter") {
+      ev.preventDefault(); var i = sugIdx >= 0 ? sugIdx : 0; if (sugItems[i]) setPlace(sugItems[i]);
+    } else if (ev.key === "Escape") closeSuggest();
+  });
+  $("find").addEventListener("input", function () { S.find = this.value.trim(); if (S.tab === "now") renderNow(); else if (S.tab === "year") renderYear(); });
+  $("lang").addEventListener("change", function () { S.lang = this.value; store("lang", S.lang); renderAll(); });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") closeSheet(); });
+
+  function locate() {
+    if (!navigator.geolocation) { toast(T("locUnsupported")); return; }
+    toast(T("locFinding"));
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var lat = pos.coords.latitude, lon = pos.coords.longitude;
+      reverseGeocode(lat, lon).then(function (r) { setPlace({ name: r.name, region: r.region, lat: lat, lon: lon }); });
+    }, function () { toast(T("locNo")); }, { timeout: 10000, maximumAge: 600000 });
+  }
+
+  /* ---------- start ---------- */
+  var start = S.place || { name: "Vienna", region: "Austria", lat: 48.21, lon: 16.37, sample: true };
+  setPlace(start);
+})();
+</script>
