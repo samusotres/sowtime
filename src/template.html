@@ -411,7 +411,8 @@ var UI = /*__UI__*/{};
     $("footData").innerHTML = esc(T("footData"))
       .replace("{nasa}", '<a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">NASA POWER</a>')
       .replace("{photon}", '<a href="https://photon.komoot.io/" target="_blank" rel="noopener">Photon</a>')
-      .replace("{osm}", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
+      .replace("{osm}", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') +
+      " " + esc(T("footElev")).replace("{tiles}", '<a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Terrain Tiles</a>');
     var sel = $("lang");
     if (!sel.options.length) sel.innerHTML = LANGS.map(function (l) { return '<option value="' + l + '">' + esc(UI[l].langName) + "</option>"; }).join("");
     sel.value = S.lang;
@@ -423,24 +424,97 @@ var UI = /*__UI__*/{};
     return { lat: s.lat, lon: s.lon, tmax: s.tmax, tmin: s.tmin, prcp: s.prcp, sunFrac: sunFrac, source: "sample" };
   }
   var NASA_KEYS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-  function fetchClimate(lat, lon) {
-    var url = "https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,CLRSKY_SFC_SW_DWN&community=AG&longitude=" +
-      lon.toFixed(3) + "&latitude=" + lat.toFixed(3) + "&format=JSON";
+  var POWER = "https://power.larc.nasa.gov/api/temporal/";
+  function getJSON(url, ms) {
     var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 25000);
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, ms || 30000);
     return fetch(url, ctl ? { signal: ctl.signal } : {}).then(function (r) {
       clearTimeout(timer);
       if (!r.ok) throw new Error("http " + r.status);
       return r.json();
-    }).then(function (j) {
+    });
+  }
+  /* Average daily highs and lows per month, from 10 years of daily data.
+     (The climatology T2M_MAX/T2M_MIN values are monthly extremes, not daily averages.) */
+  function fetchDailyTemps(lat, lon) {
+    var url = POWER + "daily/point?parameters=T2M_MAX,T2M_MIN&community=AG&longitude=" + lon.toFixed(3) + "&latitude=" + lat.toFixed(3) +
+      "&start=20140101&end=20231231&format=JSON";
+    return getJSON(url, 40000).then(function (j) {
       var P = j && j.properties && j.properties.parameter;
-      if (!P || !P.T2M_MAX) throw new Error("bad data");
-      function arr(k) { return NASA_KEYS.map(function (m) { var v = P[k] && P[k][m]; return (typeof v === "number" && v > -900) ? v : null; }); }
-      var tmax = arr("T2M_MAX"), tmin = arr("T2M_MIN"), pr = arr("PRECTOTCORR"), all = arr("ALLSKY_SFC_SW_DWN"), clr = arr("CLRSKY_SFC_SW_DWN");
+      if (!P || !P.T2M_MAX || !P.T2M_MIN) throw new Error("bad data");
+      var sum = { hi: new Array(12).fill(0), lo: new Array(12).fill(0) }, n = { hi: new Array(12).fill(0), lo: new Array(12).fill(0) };
+      [["T2M_MAX", "hi"], ["T2M_MIN", "lo"]].forEach(function (pair) {
+        var obj = P[pair[0]];
+        Object.keys(obj).forEach(function (d) {
+          var v = obj[d], m = parseInt(d.slice(4, 6), 10) - 1;
+          if (typeof v === "number" && v > -900 && m >= 0 && m < 12) { sum[pair[1]][m] += v; n[pair[1]][m]++; }
+        });
+      });
+      var tmax = sum.hi.map(function (v, m) { return n.hi[m] ? v / n.hi[m] : null; });
+      var tmin = sum.lo.map(function (v, m) { return n.lo[m] ? v / n.lo[m] : null; });
       if (tmax.some(function (v) { return v == null; }) || tmin.some(function (v) { return v == null; })) throw new Error("missing temps");
-      var sunFrac = all.map(function (a, m) { var c = clr[m]; if (a == null || c == null || c <= 0) return 0.45; return Math.max(0.05, Math.min(0.95, 1.5 * a / c - 0.5)); });
-      var prcp = pr.map(function (v, m) { return v == null ? 0 : v * E.DAYS[m]; });
-      return { lat: lat, lon: lon, tmax: tmax, tmin: tmin, prcp: prcp, sunFrac: sunFrac, source: "nasa" };
+      var geo = j.geometry && j.geometry.coordinates;
+      return { tmax: tmax, tmin: tmin, gridElev: geo && typeof geo[2] === "number" ? geo[2] : null };
+    });
+  }
+  function fetchRainSun(lat, lon) {
+    var url = POWER + "climatology/point?parameters=PRECTOTCORR,ALLSKY_SFC_SW_DWN,CLRSKY_SFC_SW_DWN&community=AG&longitude=" +
+      lon.toFixed(3) + "&latitude=" + lat.toFixed(3) + "&format=JSON";
+    return getJSON(url, 30000).then(function (j) {
+      var P = j && j.properties && j.properties.parameter;
+      if (!P) throw new Error("bad data");
+      function arr(k) { return NASA_KEYS.map(function (m) { var v = P[k] && P[k][m]; return (typeof v === "number" && v > -900) ? v : null; }); }
+      var pr = arr("PRECTOTCORR"), all = arr("ALLSKY_SFC_SW_DWN"), clr = arr("CLRSKY_SFC_SW_DWN");
+      return {
+        prcp: pr.map(function (v, m) { return v == null ? 0 : v * E.DAYS[m]; }),
+        sunFrac: all.map(function (a, m) { var c = clr[m]; if (a == null || c == null || c <= 0) return 0.45; return Math.max(0.05, Math.min(0.95, 1.5 * a / c - 0.5)); })
+      };
+    });
+  }
+  /* Ground elevation from open terrain tiles (Terrarium encoding), read through a canvas. */
+  function fetchElevation(lat, lon) {
+    return new Promise(function (resolve, reject) {
+      var z = 11, n = Math.pow(2, z);
+      var xf = (lon + 180) / 360 * n;
+      var lr = lat * Math.PI / 180;
+      var yf = (1 - Math.log(Math.tan(lr) + 1 / Math.cos(lr)) / Math.PI) / 2 * n;
+      var tx = Math.floor(xf), ty = Math.floor(yf);
+      var px = Math.min(255, Math.floor((xf - tx) * 256)), py = Math.min(255, Math.floor((yf - ty) * 256));
+      var img = new Image();
+      var timer = setTimeout(function () { img.src = ""; reject(new Error("timeout")); }, 10000);
+      img.crossOrigin = "anonymous";
+      img.onload = function () {
+        clearTimeout(timer);
+        try {
+          var c = document.createElement("canvas"); c.width = 256; c.height = 256;
+          var ctx = c.getContext("2d"); ctx.drawImage(img, 0, 0);
+          var d = ctx.getImageData(px, py, 1, 1).data;
+          var h = (d[0] * 256 + d[1] + d[2] / 256) - 32768;
+          if (!isFinite(h) || h < -500 || h > 9000) throw new Error("bad elevation");
+          resolve(Math.max(0, h));
+        } catch (e) { reject(e); }
+      };
+      img.onerror = function () { clearTimeout(timer); reject(new Error("tile")); };
+      img.src = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/" + z + "/" + tx + "/" + ty + ".png";
+    });
+  }
+  var LAPSE = 0.0065; // °C per metre
+  function fetchClimate(lat, lon) {
+    return Promise.all([
+      fetchDailyTemps(lat, lon),
+      fetchRainSun(lat, lon),
+      fetchElevation(lat, lon).catch(function () { return null; })
+    ]).then(function (r) {
+      var temps = r[0], rs = r[1], site = r[2];
+      var shift = 0;
+      if (site != null && temps.gridElev != null) shift = Math.max(-15, Math.min(15, (temps.gridElev - site) * LAPSE));
+      return {
+        lat: lat, lon: lon, source: "nasa",
+        tmax: temps.tmax.map(function (v) { return v + shift; }),
+        tmin: temps.tmin.map(function (v) { return v + shift; }),
+        prcp: rs.prcp, sunFrac: rs.sunFrac,
+        siteElev: site, gridElev: temps.gridElev, elevShift: shift
+      };
     });
   }
   function photonLang() { var l = PHOTON_LANGS[S.lang]; return l ? "&lang=" + l : ""; }
@@ -485,7 +559,7 @@ var UI = /*__UI__*/{};
     closeSuggest();
     var sample = pl.sample ? SAMPLES.find(function (s) { return s.name === pl.name; }) : null;
     if (sample) { S.climate = fromSample(sample); S.isSample = true; loadState = null; store("place", S.place); recompute(); renderAll(); return; }
-    var ck = "clim:" + pl.lat.toFixed(2) + "," + pl.lon.toFixed(2), cached = store(ck);
+    var ck = "clim3:" + pl.lat.toFixed(2) + "," + pl.lon.toFixed(2), cached = store(ck);
     if (cached && cached.tmax) { S.climate = cached; S.isSample = false; loadState = null; store("place", S.place); recompute(); renderAll(); return; }
     S.climate = null; G = null; S.isSample = false; loadState = "loading";
     renderAll();
@@ -513,7 +587,7 @@ var UI = /*__UI__*/{};
     if (!S.place) { el.innerHTML = ""; return; }
     el.innerHTML = icon("i-pin") + "<strong>" + esc(S.place.name) + "</strong>" + (S.place.region ? "<span>" + esc(S.place.region) + "</span>" : "") +
       (S.isSample ? '<span class="pill-demo">' + esc(T("sampleCity")) + "</span>" : "") +
-      "<span>· " + Math.abs(S.place.lat).toFixed(1) + "°" + (S.place.lat >= 0 ? "N" : "S") + " " + Math.abs(S.place.lon).toFixed(1) + "°" + (S.place.lon >= 0 ? "E" : "W") + "</span>";
+      (S.climate && S.climate.siteElev != null ? "<span>· " + Math.round(S.climate.siteElev) + " m</span>" : "") + "<span>· " + Math.abs(S.place.lat).toFixed(1) + "°" + (S.place.lat >= 0 ? "N" : "S") + " " + Math.abs(S.place.lon).toFixed(1) + "°" + (S.place.lon >= 0 ? "E" : "W") + "</span>";
     $("sampleNote").hidden = !S.isSample;
   }
 
@@ -753,8 +827,14 @@ var UI = /*__UI__*/{};
     el.innerHTML = '<div class="climate">' +
       '<div class="panel"><h3>' + esc(T("chartTempTitle")) + "</h3><p>" + esc(T("chartTempDesc")) + (G.shiftMax ? " " + esc(T("adjNote", { n: (G.shiftMax > 0 ? "+" : "−") + degDiff(Math.abs(G.shiftMax)) })) : "") + "</p>" + s + "</div>" +
       '<div class="panel"><h3>' + esc(T("sunTitle")) + "</h3><p>" + esc(T("sunDesc")) + "</p>" + s2 + "</div>" +
-      '<div class="panel"><h3>' + esc(T("tableTitle")) + "</h3><p>" + esc(T(S.isSample ? "srcSample" : "srcNasa")) + '</p><div style="overflow-x:auto"><table class="ctable"><thead><tr>' + th + "</tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
+      '<div class="panel"><h3>' + esc(T("tableTitle")) + "</h3><p>" + esc(T(S.isSample ? "srcSample" : "srcNasa")) + elevNote() + '</p><div style="overflow-x:auto"><table class="ctable"><thead><tr>' + th + "</tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
       "</div>";
+  }
+
+  function elevNote() {
+    var c = S.climate;
+    if (!c || c.siteElev == null || c.gridElev == null) return "";
+    return " " + esc(T("elevNote", { site: Math.round(c.siteElev), grid: Math.round(c.gridElev), n: (c.elevShift >= 0 ? "+" : "−") + degDiff(Math.abs(c.elevShift)) }));
   }
 
   /* ---------- detail sheet ---------- */

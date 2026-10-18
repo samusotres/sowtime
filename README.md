@@ -19,7 +19,9 @@ Then connect your own domain in the host's settings.
 
 | What | Source | Terms |
 |---|---|---|
-| Monthly climate for any point (day highs, night lows, rain, sunshine) | NASA POWER climatology API, called from the visitor's browser | CC BY 4.0, no use restrictions. Credit is in the footer. |
+| Day highs and night lows | NASA POWER daily data 2014–2023, averaged per month in the browser | CC BY 4.0, no use restrictions. Credit is in the footer. |
+| Rain and sunshine | NASA POWER climatology | CC BY 4.0 |
+| Ground elevation (corrects the ~50 km climate grid to the real altitude, 6.5 °C per 1,000 m) | AWS Terrain Tiles (Mapzen) | Open data, credited in the footer |
 | Place search and "use my location" | Photon public API (komoot), OpenStreetMap data | Free, fair use. Credit is in the footer. |
 | Plants (162) | Embedded; built from the plant database v0.1 | Yours, plus CC0/MIT parts credited in the footer |
 
