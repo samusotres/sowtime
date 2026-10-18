@@ -19,9 +19,8 @@ Then connect your own domain in the host's settings.
 
 | What | Source | Terms |
 |---|---|---|
-| Day highs and night lows | NASA POWER daily data 2014–2023, averaged per month in the browser | CC BY 4.0, no use restrictions. Credit is in the footer. |
-| Rain and sunshine | NASA POWER climatology | CC BY 4.0 |
-| Ground elevation (corrects the ~50 km climate grid to the real altitude, 6.5 °C per 1,000 m) | AWS Terrain Tiles (Mapzen) | Open data, credited in the footer |
+| Average temperature, average daily high/low, frost nights, rain, sunshine | Open-Meteo historical weather API (ERA5/ERA5-Land reanalysis, downscaled to the location's elevation), daily values 2006–2025 averaged per month in the browser | Free for non-commercial use, data CC BY 4.0. Credit is in the footer. |
+| Backup if Open-Meteo is unavailable | NASA POWER daily data, corrected for elevation with AWS Terrain Tiles | CC BY 4.0 / open data |
 | Place search and "use my location" | Photon public API (komoot), OpenStreetMap data | Free, fair use. Credit is in the footer. |
 | Plants (162) | Embedded; built from the plant database v0.1 | Yours, plus CC0/MIT parts credited in the footer |
 

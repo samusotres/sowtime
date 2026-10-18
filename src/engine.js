@@ -38,7 +38,7 @@
     for (var m = 0; m < 12; m++) {
       var tmax = climate.tmax[m] + shiftMax, tmin = climate.tmin[m];
       g.tmax.push(tmax); g.tmin.push(tmin);
-      g.tmean.push((tmax + tmin) / 2);
+      g.tmean.push(climate.tmean && climate.tmean[m] != null ? climate.tmean[m] + shiftMax / 2 : (tmax + tmin) / 2);
       g.soil.push((tmax + tmin) / 2 + soilShift);
       var clearHours = Math.min(H * dl[m] / dlMax, dl[m]);
       g.gardenSun.push(clearHours * climate.sunFrac[m]);

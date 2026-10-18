@@ -105,7 +105,7 @@
   "legendHarvest": "Harvest or flowering",
   "noMatchFilters": "No plants match the filters.",
   "chartTempTitle": "Temperature and rain",
-  "chartTempDesc": "Average daytime high (red) and night-time low (blue) for each month, with rainfall as bars. The shaded zone is below freezing.",
+  "chartTempDesc": "Average temperature (bold line) with the average daytime high (red) and night-time low (blue), and rainfall as bars. The shaded zone is below freezing.",
   "adjNote": "Highs include the {n}° adjustment for your bed's sun.",
   "sunTitle": "Sun on your bed",
   "sunDesc": "Average hours of direct sun per day on your bed (solid) compared with open ground (light), allowing for cloud and day length.",
@@ -187,7 +187,7 @@
   "footHowT": "How it works.",
   "footHow": "Sowtime compares each plant's needs (soil temperature to germinate, frost tolerance, the temperature range it grows in, days to harvest and sun) with the month-by-month climate of your location, adjusted for how much sun your bed gets. Treat it as a guide: microclimates, varieties and unusual years differ.",
   "footDataT": "Data.",
-  "footData": "Climate: {nasa} monthly climatology (CC BY 4.0). Place search: {photon}, map data © {osm} contributors. Variety data includes material from OpenFarm (CC0) and the FarmBot Web App (MIT, © 2018 Farmbot.io). Growing parameters and plant texts are Sowtime's own.",
+  "footData": "Backup climate: {nasa} (CC BY 4.0). Place search: {photon}, map data © {osm} contributors. Variety data includes material from OpenFarm (CC0) and the FarmBot Web App (MIT, © 2018 Farmbot.io). Growing parameters and plant texts are Sowtime's own.",
   "sampleNote": "Sample cities use approximate long-term climate averages and are for demonstration.",
   "months": [
    "January",
@@ -218,7 +218,13 @@
    "Dec"
   ],
   "elevNote": "Adjusted for elevation: your location is at {site} m, the climate grid cell averages {grid} m ({n}°).",
-  "footElev": "Elevation: {tiles} (Mapzen; SRTM and other public sources). Temperatures are averages of daily highs and lows from 2014–2023, adjusted to your elevation."
+  "footElev": "Elevation for the backup: {tiles} (Mapzen).",
+  "statAvgTemp": "Average temperature",
+  "hiLo": "Avg high {hi} · avg low {lo}",
+  "frostChance": "Frost on ~{p}% of nights",
+  "thFrostN": "Frost nights",
+  "srcOM": "Open-Meteo historical data (ERA5 reanalysis, adjusted to your elevation): averages of daily values 2006–2025. Frost nights are counted from daily lows.",
+  "footOM": "Weather data by {om} (CC BY 4.0), based on Copernicus ERA5; NASA POWER is used as a backup."
  },
  "de": {
   "langName": "Deutsch",
@@ -326,7 +332,7 @@
   "legendHarvest": "Ernte oder Blüte",
   "noMatchFilters": "Keine Pflanzen passen zu den Filtern.",
   "chartTempTitle": "Temperatur und Regen",
-  "chartTempDesc": "Durchschnittliche Tageshöchst- (rot) und Nachttiefstwerte (blau) pro Monat, Niederschlag als Balken. Der schattierte Bereich liegt unter dem Gefrierpunkt.",
+  "chartTempDesc": "Durchschnittstemperatur (fette Linie) mit mittlerem Tageshöchstwert (rot) und Nachttiefstwert (blau), Niederschlag als Balken. Der schattierte Bereich liegt unter dem Gefrierpunkt.",
   "adjNote": "Die Höchstwerte enthalten die Anpassung von {n}° für die Sonne auf deinem Beet.",
   "sunTitle": "Sonne auf dem Beet",
   "sunDesc": "Durchschnittliche Stunden direkter Sonne pro Tag auf deinem Beet (dunkel) im Vergleich zu freier Fläche (hell), unter Berücksichtigung von Wolken und Tageslänge.",
@@ -408,7 +414,7 @@
   "footHowT": "So funktioniert es.",
   "footHow": "Sowtime vergleicht die Ansprüche jeder Pflanze (Keimtemperatur des Bodens, Frosthärte, Temperaturbereich fürs Wachstum, Tage bis zur Ernte und Sonne) mit dem Klima deines Standorts Monat für Monat, angepasst an die Sonne auf deinem Beet. Sieh es als Orientierung: Kleinklima, Sorten und ungewöhnliche Jahre weichen ab.",
   "footDataT": "Daten.",
-  "footData": "Klima: {nasa} Monatsklimatologie (CC BY 4.0). Ortssuche: {photon}, Kartendaten © {osm}-Mitwirkende. Sortendaten enthalten Material von OpenFarm (CC0) und der FarmBot Web App (MIT, © 2018 Farmbot.io). Anbauparameter und Pflanzentexte stammen von Sowtime.",
+  "footData": "Ersatz-Klimadaten: {nasa} (CC BY 4.0). Ortssuche: {photon}, Kartendaten © {osm}-Mitwirkende. Sortendaten enthalten Material von OpenFarm (CC0) und der FarmBot Web App (MIT, © 2018 Farmbot.io). Anbauparameter und Pflanzentexte stammen von Sowtime.",
   "sampleNote": "Beispielstädte verwenden ungefähre langjährige Klimamittel und dienen zur Demonstration.",
   "months": [
    "Januar",
@@ -439,7 +445,13 @@
    "Dez"
   ],
   "elevNote": "An die Höhe angepasst: Dein Standort liegt auf {site} m, die Klima-Rasterzelle im Mittel auf {grid} m ({n}°).",
-  "footElev": "Höhendaten: {tiles} (Mapzen; SRTM und weitere öffentliche Quellen). Temperaturen sind Mittelwerte der täglichen Höchst- und Tiefstwerte 2014–2023, an deine Höhe angepasst."
+  "footElev": "Höhendaten für den Ersatz: {tiles} (Mapzen).",
+  "statAvgTemp": "Durchschnittstemperatur",
+  "hiLo": "Ø Hoch {hi} · Ø Tief {lo}",
+  "frostChance": "Frost in ~{p}% der Nächte",
+  "thFrostN": "Frostnächte",
+  "srcOM": "Historische Daten von Open-Meteo (ERA5-Reanalyse, an deine Höhe angepasst): Mittel der Tageswerte 2006–2025. Frostnächte werden aus den täglichen Tiefstwerten gezählt.",
+  "footOM": "Wetterdaten von {om} (CC BY 4.0), basierend auf Copernicus ERA5; NASA POWER dient als Ersatz."
  },
  "es": {
   "langName": "Español",
@@ -547,7 +559,7 @@
   "legendHarvest": "Cosecha o floración",
   "noMatchFilters": "Ninguna planta coincide con los filtros.",
   "chartTempTitle": "Temperatura y lluvia",
-  "chartTempDesc": "Máxima diurna media (rojo) y mínima nocturna (azul) de cada mes, con la lluvia en barras. La zona sombreada está bajo cero.",
+  "chartTempDesc": "Temperatura media (línea gruesa) con la máxima diurna media (rojo) y la mínima nocturna (azul), y la lluvia en barras. La zona sombreada está bajo cero.",
   "adjNote": "Las máximas incluyen el ajuste de {n}° por el sol de tu bancal.",
   "sunTitle": "Sol en tu bancal",
   "sunDesc": "Horas medias de sol directo al día en tu bancal (oscuro) frente al terreno abierto (claro), teniendo en cuenta nubes y duración del día.",
@@ -629,7 +641,7 @@
   "footHowT": "Cómo funciona.",
   "footHow": "Sowtime compara las necesidades de cada planta (temperatura del suelo para germinar, resistencia a heladas, rango de temperatura de crecimiento, días hasta la cosecha y sol) con el clima mes a mes de tu ubicación, ajustado al sol que recibe tu bancal. Tómalo como una guía: los microclimas, las variedades y los años atípicos varían.",
   "footDataT": "Datos.",
-  "footData": "Clima: climatología mensual {nasa} (CC BY 4.0). Búsqueda de lugares: {photon}, datos de mapa © colaboradores de {osm}. Los datos de variedades incluyen material de OpenFarm (CC0) y de FarmBot Web App (MIT, © 2018 Farmbot.io). Los parámetros de cultivo y los textos de plantas son de Sowtime.",
+  "footData": "Clima de respaldo: {nasa} (CC BY 4.0). Búsqueda de lugares: {photon}, datos de mapa © colaboradores de {osm}. Los datos de variedades incluyen material de OpenFarm (CC0) y de FarmBot Web App (MIT, © 2018 Farmbot.io). Los parámetros de cultivo y los textos de plantas son de Sowtime.",
   "sampleNote": "Las ciudades de ejemplo usan medias climáticas aproximadas y son solo para demostración.",
   "months": [
    "enero",
@@ -660,7 +672,13 @@
    "dic"
   ],
   "elevNote": "Ajustado por altitud: tu ubicación está a {site} m y la celda climática tiene una media de {grid} m ({n}°).",
-  "footElev": "Altitud: {tiles} (Mapzen; SRTM y otras fuentes públicas). Las temperaturas son medias de máximas y mínimas diarias de 2014–2023, ajustadas a tu altitud."
+  "footElev": "Altitud para el respaldo: {tiles} (Mapzen).",
+  "statAvgTemp": "Temperatura media",
+  "hiLo": "Máx. media {hi} · mín. media {lo}",
+  "frostChance": "Helada en ~{p}% de las noches",
+  "thFrostN": "Noches de helada",
+  "srcOM": "Datos históricos de Open-Meteo (reanálisis ERA5, ajustado a tu altitud): medias de valores diarios 2006–2025. Las noches de helada se cuentan a partir de las mínimas diarias.",
+  "footOM": "Datos meteorológicos de {om} (CC BY 4.0), basados en Copernicus ERA5; NASA POWER se usa como respaldo."
  },
  "fr": {
   "langName": "Français",
@@ -768,7 +786,7 @@
   "legendHarvest": "Récolte ou floraison",
   "noMatchFilters": "Aucune plante ne correspond aux filtres.",
   "chartTempTitle": "Température et pluie",
-  "chartTempDesc": "Maximale de jour (rouge) et minimale de nuit (bleu) moyennes par mois, avec la pluie en barres. La zone ombrée est sous zéro.",
+  "chartTempDesc": "Température moyenne (trait épais) avec la maximale de jour (rouge) et la minimale de nuit (bleu) moyennes, et la pluie en barres. La zone ombrée est sous zéro.",
   "adjNote": "Les maximales incluent l'ajustement de {n}° lié au soleil de votre plate-bande.",
   "sunTitle": "Soleil sur la plate-bande",
   "sunDesc": "Heures moyennes de soleil direct par jour sur votre plate-bande (foncé) comparées à un terrain dégagé (clair), compte tenu des nuages et de la durée du jour.",
@@ -850,7 +868,7 @@
   "footHowT": "Comment ça marche.",
   "footHow": "Sowtime compare les besoins de chaque plante (température du sol pour germer, résistance au gel, plage de température de croissance, jours jusqu'à la récolte et soleil) avec le climat mois par mois de votre lieu, ajusté selon le soleil que reçoit votre plate-bande. C'est un guide : microclimats, variétés et années atypiques varient.",
   "footDataT": "Données.",
-  "footData": "Climat : climatologie mensuelle {nasa} (CC BY 4.0). Recherche de lieux : {photon}, données cartographiques © contributeurs {osm}. Les données de variétés incluent des éléments d'OpenFarm (CC0) et de FarmBot Web App (MIT, © 2018 Farmbot.io). Les paramètres de culture et les textes des plantes appartiennent à Sowtime.",
+  "footData": "Climat de secours : {nasa} (CC BY 4.0). Recherche de lieux : {photon}, données cartographiques © contributeurs {osm}. Les données de variétés incluent des éléments d'OpenFarm (CC0) et de FarmBot Web App (MIT, © 2018 Farmbot.io). Les paramètres de culture et les textes des plantes appartiennent à Sowtime.",
   "sampleNote": "Les villes d'exemple utilisent des moyennes climatiques approximatives, à titre de démonstration.",
   "months": [
    "janvier",
@@ -881,7 +899,13 @@
    "déc"
   ],
   "elevNote": "Ajusté selon l'altitude : votre lieu est à {site} m, la maille climatique est en moyenne à {grid} m ({n}°).",
-  "footElev": "Altitude : {tiles} (Mapzen ; SRTM et autres sources publiques). Les températures sont des moyennes des maximales et minimales quotidiennes 2014–2023, ajustées à votre altitude."
+  "footElev": "Altitude pour le secours : {tiles} (Mapzen).",
+  "statAvgTemp": "Température moyenne",
+  "hiLo": "Max. moy. {hi} · min. moy. {lo}",
+  "frostChance": "Gel ~{p} % des nuits",
+  "thFrostN": "Nuits de gel",
+  "srcOM": "Données historiques Open-Meteo (réanalyse ERA5, ajustée à votre altitude) : moyennes des valeurs quotidiennes 2006–2025. Les nuits de gel sont comptées à partir des minimales quotidiennes.",
+  "footOM": "Données météo : {om} (CC BY 4.0), d'après Copernicus ERA5 ; NASA POWER sert de secours."
  },
  "it": {
   "langName": "Italiano",
@@ -989,7 +1013,7 @@
   "legendHarvest": "Raccolto o fioritura",
   "noMatchFilters": "Nessuna pianta corrisponde ai filtri.",
   "chartTempTitle": "Temperatura e pioggia",
-  "chartTempDesc": "Massima diurna media (rosso) e minima notturna (blu) di ogni mese, con la pioggia a barre. La zona ombreggiata è sotto zero.",
+  "chartTempDesc": "Temperatura media (linea spessa) con la massima diurna (rosso) e la minima notturna (blu) medie, e la pioggia a barre. La zona ombreggiata è sotto zero.",
   "adjNote": "Le massime includono la correzione di {n}° per il sole della tua aiuola.",
   "sunTitle": "Sole sull'aiuola",
   "sunDesc": "Ore medie di sole diretto al giorno sulla tua aiuola (scuro) rispetto al terreno aperto (chiaro), considerando nuvole e durata del giorno.",
@@ -1071,7 +1095,7 @@
   "footHowT": "Come funziona.",
   "footHow": "Sowtime confronta le esigenze di ogni pianta (temperatura del suolo per germinare, resistenza al gelo, intervallo di temperatura di crescita, giorni al raccolto e sole) con il clima mese per mese del tuo luogo, corretto in base al sole che riceve la tua aiuola. Consideralo una guida: microclimi, varietà e annate insolite possono variare.",
   "footDataT": "Dati.",
-  "footData": "Clima: climatologia mensile {nasa} (CC BY 4.0). Ricerca luoghi: {photon}, dati cartografici © contributori di {osm}. I dati sulle varietà includono materiale di OpenFarm (CC0) e di FarmBot Web App (MIT, © 2018 Farmbot.io). Parametri di coltivazione e testi delle piante sono di Sowtime.",
+  "footData": "Clima di riserva: {nasa} (CC BY 4.0). Ricerca luoghi: {photon}, dati cartografici © contributori di {osm}. I dati sulle varietà includono materiale di OpenFarm (CC0) e di FarmBot Web App (MIT, © 2018 Farmbot.io). Parametri di coltivazione e testi delle piante sono di Sowtime.",
   "sampleNote": "Le città di esempio usano medie climatiche approssimative e servono solo come dimostrazione.",
   "months": [
    "gennaio",
@@ -1102,7 +1126,13 @@
    "dic"
   ],
   "elevNote": "Corretto per l'altitudine: il tuo luogo è a {site} m, la cella climatica è in media a {grid} m ({n}°).",
-  "footElev": "Altitudine: {tiles} (Mapzen; SRTM e altre fonti pubbliche). Le temperature sono medie delle massime e minime giornaliere 2014–2023, corrette per la tua altitudine."
+  "footElev": "Altitudine per la riserva: {tiles} (Mapzen).",
+  "statAvgTemp": "Temperatura media",
+  "hiLo": "Max. media {hi} · min. media {lo}",
+  "frostChance": "Gelo nel ~{p}% delle notti",
+  "thFrostN": "Notti di gelo",
+  "srcOM": "Dati storici Open-Meteo (rianalisi ERA5, corretta per la tua altitudine): medie dei valori giornalieri 2006–2025. Le notti di gelo sono contate dalle minime giornaliere.",
+  "footOM": "Dati meteo di {om} (CC BY 4.0), basati su Copernicus ERA5; NASA POWER è usato come riserva."
  },
  "nl": {
   "langName": "Nederlands",
@@ -1210,7 +1240,7 @@
   "legendHarvest": "Oogst of bloei",
   "noMatchFilters": "Geen planten passen bij de filters.",
   "chartTempTitle": "Temperatuur en regen",
-  "chartTempDesc": "Gemiddelde dagmaximum (rood) en nachtminimum (blauw) per maand, met neerslag als staven. Het gearceerde deel ligt onder het vriespunt.",
+  "chartTempDesc": "Gemiddelde temperatuur (dikke lijn) met het gemiddelde dagmaximum (rood) en nachtminimum (blauw), en neerslag als staven. Het gearceerde deel ligt onder het vriespunt.",
   "adjNote": "De maxima bevatten de correctie van {n}° voor de zon op je bed.",
   "sunTitle": "Zon op je bed",
   "sunDesc": "Gemiddeld aantal uren directe zon per dag op je bed (donker) vergeleken met open grond (licht), rekening houdend met bewolking en daglengte.",
@@ -1292,7 +1322,7 @@
   "footHowT": "Zo werkt het.",
   "footHow": "Sowtime vergelijkt wat elke plant nodig heeft (bodemtemperatuur om te kiemen, winterhardheid, het temperatuurbereik waarin hij groeit, dagen tot oogst en zon) met het klimaat van jouw plek, maand voor maand, aangepast aan de zon op je bed. Zie het als richtlijn: microklimaten, rassen en uitzonderlijke jaren verschillen.",
   "footDataT": "Gegevens.",
-  "footData": "Klimaat: {nasa} maandklimatologie (CC BY 4.0). Plaatsen zoeken: {photon}, kaartgegevens © {osm}-bijdragers. Rasgegevens bevatten materiaal van OpenFarm (CC0) en de FarmBot Web App (MIT, © 2018 Farmbot.io). Teeltgegevens en planteksten zijn van Sowtime.",
+  "footData": "Reserve-klimaatgegevens: {nasa} (CC BY 4.0). Plaatsen zoeken: {photon}, kaartgegevens © {osm}-bijdragers. Rasgegevens bevatten materiaal van OpenFarm (CC0) en de FarmBot Web App (MIT, © 2018 Farmbot.io). Teeltgegevens en planteksten zijn van Sowtime.",
   "sampleNote": "Voorbeeldsteden gebruiken benaderde langjarige klimaatgemiddelden en zijn bedoeld als demonstratie.",
   "months": [
    "januari",
@@ -1323,6 +1353,12 @@
    "dec"
   ],
   "elevNote": "Gecorrigeerd voor hoogte: je locatie ligt op {site} m, de klimaatrastercel gemiddeld op {grid} m ({n}°).",
-  "footElev": "Hoogte: {tiles} (Mapzen; SRTM en andere openbare bronnen). Temperaturen zijn gemiddelden van dagelijkse maxima en minima 2014–2023, gecorrigeerd voor jouw hoogte."
+  "footElev": "Hoogte voor de reserve: {tiles} (Mapzen).",
+  "statAvgTemp": "Gemiddelde temperatuur",
+  "hiLo": "Gem. max {hi} · gem. min {lo}",
+  "frostChance": "Vorst in ~{p}% van de nachten",
+  "thFrostN": "Vorstnachten",
+  "srcOM": "Historische gegevens van Open-Meteo (ERA5-heranalyse, gecorrigeerd voor jouw hoogte): gemiddelden van dagwaarden 2006–2025. Vorstnachten worden geteld uit de dagelijkse minima.",
+  "footOM": "Weergegevens van {om} (CC BY 4.0), gebaseerd op Copernicus ERA5; NASA POWER dient als reserve."
  }
 }

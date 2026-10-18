@@ -412,6 +412,7 @@ var UI = /*__UI__*/{};
       .replace("{nasa}", '<a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">NASA POWER</a>')
       .replace("{photon}", '<a href="https://photon.komoot.io/" target="_blank" rel="noopener">Photon</a>')
       .replace("{osm}", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') +
+      " " + esc(T("footOM")).replace("{om}", '<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>') +
       " " + esc(T("footElev")).replace("{tiles}", '<a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Terrain Tiles</a>');
     var sel = $("lang");
     if (!sel.options.length) sel.innerHTML = LANGS.map(function (l) { return '<option value="' + l + '">' + esc(UI[l].langName) + "</option>"; }).join("");
@@ -450,11 +451,13 @@ var UI = /*__UI__*/{};
           if (typeof v === "number" && v > -900 && m >= 0 && m < 12) { sum[pair[1]][m] += v; n[pair[1]][m]++; }
         });
       });
+      var mins = []; for (var mm = 0; mm < 12; mm++) mins.push([]);
+      Object.keys(P.T2M_MIN).forEach(function (d) { var v = P.T2M_MIN[d], m = parseInt(d.slice(4, 6), 10) - 1; if (typeof v === "number" && v > -900) mins[m].push(v); });
       var tmax = sum.hi.map(function (v, m) { return n.hi[m] ? v / n.hi[m] : null; });
       var tmin = sum.lo.map(function (v, m) { return n.lo[m] ? v / n.lo[m] : null; });
       if (tmax.some(function (v) { return v == null; }) || tmin.some(function (v) { return v == null; })) throw new Error("missing temps");
       var geo = j.geometry && j.geometry.coordinates;
-      return { tmax: tmax, tmin: tmin, gridElev: geo && typeof geo[2] === "number" ? geo[2] : null };
+      return { tmax: tmax, tmin: tmin, mins: mins, gridElev: geo && typeof geo[2] === "number" ? geo[2] : null };
     });
   }
   function fetchRainSun(lat, lon) {
@@ -498,8 +501,42 @@ var UI = /*__UI__*/{};
       img.src = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/" + z + "/" + tx + "/" + ty + ".png";
     });
   }
+  /* Primary source: Open-Meteo historical weather (ERA5/ERA5-Land reanalysis, downscaled to local elevation).
+     Free for non-commercial use; attribution required. Daily values 2006–2025 are averaged per month here. */
+  function fetchOpenMeteo(lat, lon) {
+    var url = "https://archive-api.open-meteo.com/v1/archive?latitude=" + lat.toFixed(4) + "&longitude=" + lon.toFixed(4) +
+      "&start_date=2006-01-01&end_date=2025-12-31&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,sunshine_duration,daylight_duration&timezone=auto";
+    return getJSON(url, 45000).then(function (j) {
+      var D = j && j.daily;
+      if (!D || !D.time || !D.temperature_2m_max) throw new Error("bad data");
+      var keys = ["temperature_2m_max", "temperature_2m_min", "temperature_2m_mean", "precipitation_sum", "sunshine_duration", "daylight_duration"];
+      var sum = {}, cnt = {}; keys.forEach(function (k) { sum[k] = new Array(12).fill(0); cnt[k] = new Array(12).fill(0); });
+      var frost = new Array(12).fill(0), nights = new Array(12).fill(0), years = {};
+      D.time.forEach(function (day, i) {
+        var m = parseInt(day.slice(5, 7), 10) - 1;
+        years[day.slice(0, 4)] = 1;
+        keys.forEach(function (k) { var v = D[k] && D[k][i]; if (typeof v === "number") { sum[k][m] += v; cnt[k][m]++; } });
+        var lo = D.temperature_2m_min[i];
+        if (typeof lo === "number") { nights[m]++; if (lo <= 0) frost[m]++; }
+      });
+      function avg(k) { return sum[k].map(function (v, m) { return cnt[k][m] ? v / cnt[k][m] : null; }); }
+      var tmax = avg("temperature_2m_max"), tmin = avg("temperature_2m_min"), tmean = avg("temperature_2m_mean");
+      if (tmax.some(function (v) { return v == null; }) || tmin.some(function (v) { return v == null; })) throw new Error("missing temps");
+      var pr = avg("precipitation_sum"), sun = avg("sunshine_duration"), dl = avg("daylight_duration");
+      return {
+        lat: lat, lon: lon, source: "openmeteo", siteElev: typeof j.elevation === "number" ? j.elevation : null,
+        tmax: tmax, tmin: tmin, tmean: tmean,
+        prcp: pr.map(function (v, m) { return (v || 0) * E.DAYS[m]; }),
+        sunFrac: sun.map(function (v, m) { var d = dl[m]; return (v != null && d) ? Math.max(0.05, Math.min(0.95, v / d)) : 0.45; }),
+        frostPct: frost.map(function (f, m) { return nights[m] ? f / nights[m] : null; })
+      };
+    });
+  }
   var LAPSE = 0.0065; // °C per metre
   function fetchClimate(lat, lon) {
+    return fetchOpenMeteo(lat, lon).catch(function () { return fetchNasa(lat, lon); });
+  }
+  function fetchNasa(lat, lon) {
     return Promise.all([
       fetchDailyTemps(lat, lon),
       fetchRainSun(lat, lon),
@@ -508,11 +545,12 @@ var UI = /*__UI__*/{};
       var temps = r[0], rs = r[1], site = r[2];
       var shift = 0;
       if (site != null && temps.gridElev != null) shift = Math.max(-15, Math.min(15, (temps.gridElev - site) * LAPSE));
+      temps.frostPct = temps.mins.map(function (a) { return a.length ? a.filter(function (v) { return v + shift <= 0; }).length / a.length : null; });
       return {
         lat: lat, lon: lon, source: "nasa",
         tmax: temps.tmax.map(function (v) { return v + shift; }),
         tmin: temps.tmin.map(function (v) { return v + shift; }),
-        prcp: rs.prcp, sunFrac: rs.sunFrac,
+        prcp: rs.prcp, sunFrac: rs.sunFrac, frostPct: temps.frostPct.map(function (f, m) { return f; }),
         siteElev: site, gridElev: temps.gridElev, elevShift: shift
       };
     });
@@ -559,7 +597,7 @@ var UI = /*__UI__*/{};
     closeSuggest();
     var sample = pl.sample ? SAMPLES.find(function (s) { return s.name === pl.name; }) : null;
     if (sample) { S.climate = fromSample(sample); S.isSample = true; loadState = null; store("place", S.place); recompute(); renderAll(); return; }
-    var ck = "clim3:" + pl.lat.toFixed(2) + "," + pl.lon.toFixed(2), cached = store(ck);
+    var ck = "clim4:" + pl.lat.toFixed(2) + "," + pl.lon.toFixed(2), cached = store(ck);
     if (cached && cached.tmax) { S.climate = cached; S.isSample = false; loadState = null; store("place", S.place); recompute(); renderAll(); return; }
     S.climate = null; G = null; S.isSample = false; loadState = "loading";
     renderAll();
@@ -639,27 +677,35 @@ var UI = /*__UI__*/{};
       return;
     }
     if (!G) { el.innerHTML = '<p class="status">' + esc(T("searchPrompt")) + "</p>"; return; }
-    var m = S.month, fr = E.frostRisk(G.tmin[m]);
+    var m = S.month, fp = frostPct(m), fr = { level: frostLevelPct(fp) };
     var lead = esc(T("monthIn", { month: "\u0000", place: "\u0001" })).replace("\u0000", esc(cap(MONTH(m)))).replace("\u0001", "<em>" + esc(S.place.name) + "</em>");
     var hem = S.place.lat < 0 ? T("southern") : "";
     var sh = G.shiftMax < 0 ? T("cooler", { n: degDiff(Math.abs(G.shiftMax)) }) : G.shiftMax > 0 ? T("warmer", { n: degDiff(G.shiftMax) }) : "";
     var clearH = Math.min(G.sunHours * G.dl[m] / Math.max.apply(null, G.dl), G.dl[m]);
     el.innerHTML = "<h2>" + lead + "</h2>" +
       '<div class="stats">' +
-      stat("i-temp", T("statDayNight"), t(G.tmax[m]) + " / " + t(G.tmin[m]), T("statAvg", { t: t(G.tmean[m]) })) +
-      stat("i-frost", T("statFrost"), '<span class="chip-frost lv' + fr.level + '">' + esc(frostLabel(fr.level)) + "</span>", frostSpan()) +
+      stat("i-temp", T("statAvgTemp"), t(G.tmean[m]), T("hiLo", { hi: t(G.tmax[m]), lo: t(G.tmin[m]) })) +
+      stat("i-frost", T("statFrost"), '<span class="chip-frost lv' + fr.level + '">' + esc(frostLabel(fr.level)) + "</span>", (fp >= 0.01 ? T("frostChance", { p: pctText(fp) }) + " · " : "") + frostSpan()) +
       stat("i-drop", T("statRain"), Math.round(G.prcp[m]) + " mm", rainWord(G.prcp[m])) +
       stat(SUN_ICON[S.sun], T("statSun"), G.gardenSun[m].toFixed(1) + " " + esc(T("hDay")), T("sunSub", { h: clearH.toFixed(1) })) +
       "</div>" + ((hem || sh) ? '<p class="status">' + esc([hem, sh].filter(Boolean).join(" ")) + "</p>" : "");
   }
   function stat(ic, k, v, s) { return '<div class="stat"><div class="k">' + icon(ic) + esc(k) + '</div><div class="v">' + v + '</div><div class="s">' + esc(s) + "</div></div>"; }
   function rainWord(mm) { return T("rain" + (mm < 15 ? 0 : mm < 40 ? 1 : mm < 100 ? 2 : mm < 200 ? 3 : 4)); }
+  /* Share of nights at or below 0 °C. Measured from daily data where available, otherwise estimated from the average low. */
+  function frostPct(m) {
+    if (S.climate && S.climate.frostPct && S.climate.frostPct[m] != null) return S.climate.frostPct[m];
+    var z = (0 - G.tmin[m]) / 3.5; // normal approximation, sd ≈ 3.5 °C
+    return 1 / (1 + Math.exp(-1.702 * z));
+  }
+  function frostLevelPct(p) { return p < 0.01 ? 0 : p < 0.1 ? 1 : p < 0.5 ? 2 : 3; }
+  function pctText(p) { return p < 0.01 ? "0" : p < 0.05 ? "<5" : String(Math.round(p * 20) * 5); }
   function frostSpan() {
-    var fm = []; for (var i = 0; i < 12; i++) if (G.tmin[i] <= 2) fm.push(i);
+    var fm = []; for (var i = 0; i < 12; i++) if (frostPct(i) >= 0.1) fm.push(i);
     if (!fm.length) return T("frostNone");
     if (fm.length === 12) return T("frostAll");
-    var start = fm.find(function (i) { return G.tmin[(i + 11) % 12] > 2; });
-    var end = fm.find(function (i) { return G.tmin[(i + 1) % 12] > 2; });
+    var start = fm.find(function (i) { return frostPct((i + 11) % 12) < 0.1; });
+    var end = fm.find(function (i) { return frostPct((i + 1) % 12) < 0.1; });
     return T("frostMonths", { range: cap(MON(start)) + (start !== end ? "–" + cap(MON(end)) : "") });
   }
 
@@ -797,11 +843,14 @@ var UI = /*__UI__*/{};
     }
     var pt = function (arr) { return arr.map(function (v, i) { return x(i) + "," + y(tNum(v)); }); };
     s += '<polygon points="' + pt(G.tmax).join(" ") + " " + pt(G.tmin).reverse().join(" ") + '" fill="var(--sun)" opacity=".18"/>';
-    s += '<polyline points="' + pt(G.tmax).join(" ") + '" fill="none" stroke="var(--hot)" stroke-width="2.2"/>';
-    s += '<polyline points="' + pt(G.tmin).join(" ") + '" fill="none" stroke="var(--frost)" stroke-width="2.2"/>';
+    s += '<polyline points="' + pt(G.tmax).join(" ") + '" fill="none" stroke="var(--hot)" stroke-width="1.6" stroke-dasharray="5 4"/>';
+    s += '<polyline points="' + pt(G.tmin).join(" ") + '" fill="none" stroke="var(--frost)" stroke-width="1.6" stroke-dasharray="5 4"/>';
+    s += '<polyline points="' + pt(G.tmean).join(" ") + '" fill="none" stroke="var(--ink)" stroke-width="3"/>';
     for (i = 0; i < 12; i++) {
       s += '<circle cx="' + x(i) + '" cy="' + y(tNum(G.tmax[i])) + '" r="' + (i === S.month ? 4.5 : 2.6) + '" fill="var(--hot)"/>';
       s += '<circle cx="' + x(i) + '" cy="' + y(tNum(G.tmin[i])) + '" r="' + (i === S.month ? 4.5 : 2.6) + '" fill="var(--frost)"/>';
+      s += '<circle cx="' + x(i) + '" cy="' + y(tNum(G.tmean[i])) + '" r="' + (i === S.month ? 5 : 3.2) + '" fill="var(--ink)"/>';
+      if (i === S.month) s += '<text x="' + x(i) + '" y="' + (y(tNum(G.tmean[i])) - 9) + '" text-anchor="middle" style="font-weight:700;fill:var(--ink)">' + Math.round(tNum(G.tmean[i])) + "°</text>";
     }
     s += '<text x="' + (W - R + 6) + '" y="' + (yp(pmax) + 4) + '">' + pmax + '</text><text x="' + (W - R + 6) + '" y="' + (H - B + 4) + '">' + (narrow ? "0" : "0 mm") + "</text></svg>";
 
@@ -819,15 +868,14 @@ var UI = /*__UI__*/{};
 
     var rows = "";
     for (i = 0; i < 12; i++) {
-      var fr = E.frostRisk(G.tmin[i]);
       rows += '<tr class="' + (i === S.month ? "now" : "") + '"><td>' + esc(cap(MONTH(i))) + "</td><td>" + t(G.tmin[i]) + "</td><td>" + t(G.tmean[i]) + "</td><td>" + t(G.tmax[i]) + "</td><td>" + Math.round(G.prcp[i]) +
-        " mm</td><td>" + G.gardenSun[i].toFixed(1) + " h</td><td>" + G.dl[i].toFixed(1) + " h</td><td>" + esc(frostLabel(fr.level)) + "</td></tr>";
+        " mm</td><td>" + G.gardenSun[i].toFixed(1) + " h</td><td>" + G.dl[i].toFixed(1) + " h</td><td>" + pctText(frostPct(i)) + "%</td></tr>";
     }
-    var th = ["thMonth", "thLow", "thAvg", "thHigh", "thRain", "thSun", "thDay", "thFrost"].map(function (k) { return "<th>" + esc(T(k)) + "</th>"; }).join("");
+    var th = ["thMonth", "thLow", "thAvg", "thHigh", "thRain", "thSun", "thDay", "thFrostN"].map(function (k) { return "<th>" + esc(T(k)) + "</th>"; }).join("");
     el.innerHTML = '<div class="climate">' +
       '<div class="panel"><h3>' + esc(T("chartTempTitle")) + "</h3><p>" + esc(T("chartTempDesc")) + (G.shiftMax ? " " + esc(T("adjNote", { n: (G.shiftMax > 0 ? "+" : "−") + degDiff(Math.abs(G.shiftMax)) })) : "") + "</p>" + s + "</div>" +
       '<div class="panel"><h3>' + esc(T("sunTitle")) + "</h3><p>" + esc(T("sunDesc")) + "</p>" + s2 + "</div>" +
-      '<div class="panel"><h3>' + esc(T("tableTitle")) + "</h3><p>" + esc(T(S.isSample ? "srcSample" : "srcNasa")) + elevNote() + '</p><div style="overflow-x:auto"><table class="ctable"><thead><tr>' + th + "</tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
+      '<div class="panel"><h3>' + esc(T("tableTitle")) + "</h3><p>" + esc(T(S.isSample ? "srcSample" : (S.climate && S.climate.source === "openmeteo" ? "srcOM" : "srcNasa"))) + elevNote() + '</p><div style="overflow-x:auto"><table class="ctable"><thead><tr>' + th + "</tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
       "</div>";
   }
 
