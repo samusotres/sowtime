@@ -224,7 +224,13 @@
   "frostChance": "Frost on ~{p}% of nights",
   "thFrostN": "Frost nights",
   "srcOM": "Open-Meteo historical data (ERA5 reanalysis, adjusted to your elevation): averages of daily values 2006–2025. Frost nights are counted from daily lows.",
-  "footOM": "Weather data by {om} (CC BY 4.0), based on Copernicus ERA5; NASA POWER is used as a backup."
+  "footOM": "Weather data by {om} (CC BY 4.0), based on Copernicus ERA5; NASA POWER is used as a backup.",
+  "legalT": "Disclaimer.",
+  "legal": "Sowtime is a free, non-commercial guide, provided as is and without warranty of any kind. Planting dates, ratings and climate figures are estimates based on long-term averages and general growing data; they are not forecasts, and actual weather, microclimates, soils and varieties differ. Always check local conditions and advice before you plant. Do not use this site to decide whether a plant is edible, medicinal or safe for people or animals; several listed plants are toxic. To the extent permitted by law, the authors accept no liability for crop losses or any other loss or damage arising from use of this information.",
+  "privacyT": "Privacy.",
+  "privacy": "No account, cookies or tracking. Your settings are saved only in your own browser. Place searches and the location you choose are sent to Photon, Open-Meteo, NASA POWER and Amazon Web Services (terrain tiles) to look up places and climate data, under their own privacy policies.",
+  "licenseLine": "Open source: code under the MIT License, plant data and texts under CC BY 4.0. Source on {repo}.",
+  "sheetNote": "General guidance only. Check local advice, and never rely on this page to judge whether a plant is safe to eat."
  },
  "de": {
   "langName": "Deutsch",
@@ -451,7 +457,13 @@
   "frostChance": "Frost in ~{p}% der Nächte",
   "thFrostN": "Frostnächte",
   "srcOM": "Historische Daten von Open-Meteo (ERA5-Reanalyse, an deine Höhe angepasst): Mittel der Tageswerte 2006–2025. Frostnächte werden aus den täglichen Tiefstwerten gezählt.",
-  "footOM": "Wetterdaten von {om} (CC BY 4.0), basierend auf Copernicus ERA5; NASA POWER dient als Ersatz."
+  "footOM": "Wetterdaten von {om} (CC BY 4.0), basierend auf Copernicus ERA5; NASA POWER dient als Ersatz.",
+  "legalT": "Haftungsausschluss.",
+  "legal": "Sowtime ist ein kostenloser, nicht kommerzieller Ratgeber und wird ohne jegliche Gewähr bereitgestellt. Pflanztermine, Bewertungen und Klimawerte sind Schätzungen auf Basis langjähriger Mittelwerte und allgemeiner Anbaudaten; sie sind keine Vorhersagen, und tatsächliches Wetter, Kleinklima, Böden und Sorten weichen ab. Prüfe vor dem Pflanzen immer die örtlichen Bedingungen und Empfehlungen. Verwende diese Seite nicht, um zu beurteilen, ob eine Pflanze essbar, heilkräftig oder für Menschen und Tiere unbedenklich ist; mehrere aufgeführte Pflanzen sind giftig. Soweit gesetzlich zulässig, übernehmen die Autoren keine Haftung für Ernteausfälle oder sonstige Verluste oder Schäden aus der Nutzung dieser Informationen.",
+  "privacyT": "Datenschutz.",
+  "privacy": "Kein Konto, keine Cookies, kein Tracking. Deine Einstellungen werden nur in deinem eigenen Browser gespeichert. Ortssuchen und der gewählte Standort werden an Photon, Open-Meteo, NASA POWER und Amazon Web Services (Höhendaten) gesendet, um Orte und Klimadaten abzurufen; dort gelten deren eigene Datenschutzbestimmungen.",
+  "licenseLine": "Open Source: Code unter der MIT-Lizenz, Pflanzendaten und -texte unter CC BY 4.0. Quellcode auf {repo}.",
+  "sheetNote": "Nur allgemeine Hinweise. Prüfe örtliche Empfehlungen und verlass dich nie auf diese Seite, um zu beurteilen, ob eine Pflanze essbar ist."
  },
  "es": {
   "langName": "Español",
@@ -678,7 +690,13 @@
   "frostChance": "Helada en ~{p}% de las noches",
   "thFrostN": "Noches de helada",
   "srcOM": "Datos históricos de Open-Meteo (reanálisis ERA5, ajustado a tu altitud): medias de valores diarios 2006–2025. Las noches de helada se cuentan a partir de las mínimas diarias.",
-  "footOM": "Datos meteorológicos de {om} (CC BY 4.0), basados en Copernicus ERA5; NASA POWER se usa como respaldo."
+  "footOM": "Datos meteorológicos de {om} (CC BY 4.0), basados en Copernicus ERA5; NASA POWER se usa como respaldo.",
+  "legalT": "Aviso legal.",
+  "legal": "Sowtime es una guía gratuita y sin fines comerciales, ofrecida tal cual y sin garantía de ningún tipo. Las fechas de siembra, valoraciones y datos climáticos son estimaciones basadas en medias a largo plazo y datos generales de cultivo; no son previsiones, y el tiempo real, los microclimas, los suelos y las variedades varían. Comprueba siempre las condiciones y recomendaciones locales antes de plantar. No uses este sitio para decidir si una planta es comestible, medicinal o segura para personas o animales; varias de las plantas listadas son tóxicas. En la medida en que lo permita la ley, los autores no aceptan responsabilidad por pérdidas de cosecha ni por otros daños derivados del uso de esta información.",
+  "privacyT": "Privacidad.",
+  "privacy": "Sin cuenta, cookies ni seguimiento. Tus ajustes se guardan solo en tu navegador. Las búsquedas y la ubicación elegida se envían a Photon, Open-Meteo, NASA POWER y Amazon Web Services (datos de altitud) para obtener lugares y datos climáticos, bajo sus propias políticas de privacidad.",
+  "licenseLine": "Código abierto: código bajo licencia MIT, datos y textos de plantas bajo CC BY 4.0. Código fuente en {repo}.",
+  "sheetNote": "Solo orientación general. Consulta las recomendaciones locales y nunca uses esta página para juzgar si una planta es comestible."
  },
  "fr": {
   "langName": "Français",
@@ -905,7 +923,13 @@
   "frostChance": "Gel ~{p} % des nuits",
   "thFrostN": "Nuits de gel",
   "srcOM": "Données historiques Open-Meteo (réanalyse ERA5, ajustée à votre altitude) : moyennes des valeurs quotidiennes 2006–2025. Les nuits de gel sont comptées à partir des minimales quotidiennes.",
-  "footOM": "Données météo : {om} (CC BY 4.0), d'après Copernicus ERA5 ; NASA POWER sert de secours."
+  "footOM": "Données météo : {om} (CC BY 4.0), d'après Copernicus ERA5 ; NASA POWER sert de secours.",
+  "legalT": "Avertissement.",
+  "legal": "Sowtime est un guide gratuit et non commercial, fourni tel quel et sans aucune garantie. Les dates de plantation, appréciations et données climatiques sont des estimations fondées sur des moyennes à long terme et des données de culture générales ; ce ne sont pas des prévisions, et la météo réelle, les microclimats, les sols et les variétés diffèrent. Vérifiez toujours les conditions et conseils locaux avant de planter. N'utilisez pas ce site pour décider si une plante est comestible, médicinale ou sans danger pour les personnes ou les animaux ; plusieurs plantes listées sont toxiques. Dans la mesure permise par la loi, les auteurs déclinent toute responsabilité pour des pertes de récolte ou tout autre dommage résultant de l'utilisation de ces informations.",
+  "privacyT": "Confidentialité.",
+  "privacy": "Pas de compte, de cookies ni de suivi. Vos réglages sont enregistrés uniquement dans votre navigateur. Les recherches et le lieu choisi sont envoyés à Photon, Open-Meteo, NASA POWER et Amazon Web Services (données d'altitude) pour trouver les lieux et le climat, selon leurs propres politiques de confidentialité.",
+  "licenseLine": "Open source : code sous licence MIT, données et textes des plantes sous CC BY 4.0. Code source sur {repo}.",
+  "sheetNote": "Conseils généraux uniquement. Vérifiez les recommandations locales et ne vous fiez jamais à cette page pour juger si une plante est comestible."
  },
  "it": {
   "langName": "Italiano",
@@ -1132,7 +1156,13 @@
   "frostChance": "Gelo nel ~{p}% delle notti",
   "thFrostN": "Notti di gelo",
   "srcOM": "Dati storici Open-Meteo (rianalisi ERA5, corretta per la tua altitudine): medie dei valori giornalieri 2006–2025. Le notti di gelo sono contate dalle minime giornaliere.",
-  "footOM": "Dati meteo di {om} (CC BY 4.0), basati su Copernicus ERA5; NASA POWER è usato come riserva."
+  "footOM": "Dati meteo di {om} (CC BY 4.0), basati su Copernicus ERA5; NASA POWER è usato come riserva.",
+  "legalT": "Esclusione di responsabilità.",
+  "legal": "Sowtime è una guida gratuita e non commerciale, fornita così com'è e senza alcuna garanzia. Date di semina, valutazioni e dati climatici sono stime basate su medie di lungo periodo e dati generali di coltivazione; non sono previsioni, e il meteo reale, i microclimi, i suoli e le varietà possono differire. Verifica sempre le condizioni e i consigli locali prima di piantare. Non usare questo sito per stabilire se una pianta è commestibile, medicinale o sicura per persone o animali; diverse piante elencate sono tossiche. Nei limiti consentiti dalla legge, gli autori non si assumono alcuna responsabilità per perdite di raccolto o altri danni derivanti dall'uso di queste informazioni.",
+  "privacyT": "Privacy.",
+  "privacy": "Nessun account, cookie o tracciamento. Le impostazioni sono salvate solo nel tuo browser. Le ricerche e il luogo scelto vengono inviati a Photon, Open-Meteo, NASA POWER e Amazon Web Services (dati di altitudine) per trovare luoghi e dati climatici, secondo le loro politiche sulla privacy.",
+  "licenseLine": "Open source: codice con licenza MIT, dati e testi delle piante con licenza CC BY 4.0. Codice sorgente su {repo}.",
+  "sheetNote": "Solo indicazioni generali. Verifica i consigli locali e non affidarti mai a questa pagina per stabilire se una pianta è commestibile."
  },
  "nl": {
   "langName": "Nederlands",
@@ -1359,6 +1389,12 @@
   "frostChance": "Vorst in ~{p}% van de nachten",
   "thFrostN": "Vorstnachten",
   "srcOM": "Historische gegevens van Open-Meteo (ERA5-heranalyse, gecorrigeerd voor jouw hoogte): gemiddelden van dagwaarden 2006–2025. Vorstnachten worden geteld uit de dagelijkse minima.",
-  "footOM": "Weergegevens van {om} (CC BY 4.0), gebaseerd op Copernicus ERA5; NASA POWER dient als reserve."
+  "footOM": "Weergegevens van {om} (CC BY 4.0), gebaseerd op Copernicus ERA5; NASA POWER dient als reserve.",
+  "legalT": "Disclaimer.",
+  "legal": "Sowtime is een gratis, niet-commerciële gids, aangeboden zoals hij is en zonder enige garantie. Plantdata, beoordelingen en klimaatcijfers zijn schattingen op basis van langjarige gemiddelden en algemene teeltgegevens; het zijn geen voorspellingen, en het werkelijke weer, microklimaten, bodems en rassen verschillen. Controleer altijd de lokale omstandigheden en adviezen voordat je plant. Gebruik deze site niet om te bepalen of een plant eetbaar, geneeskrachtig of veilig is voor mensen of dieren; meerdere vermelde planten zijn giftig. Voor zover de wet dit toestaat, aanvaarden de makers geen aansprakelijkheid voor misoogsten of andere schade door het gebruik van deze informatie.",
+  "privacyT": "Privacy.",
+  "privacy": "Geen account, cookies of tracking. Je instellingen worden alleen in je eigen browser bewaard. Zoekopdrachten en de gekozen locatie worden naar Photon, Open-Meteo, NASA POWER en Amazon Web Services (hoogtegegevens) gestuurd om plaatsen en klimaatgegevens op te halen, onder hun eigen privacybeleid.",
+  "licenseLine": "Open source: code onder de MIT-licentie, plantgegevens en -teksten onder CC BY 4.0. Broncode op {repo}.",
+  "sheetNote": "Alleen algemene richtlijnen. Controleer lokale adviezen en vertrouw nooit op deze pagina om te beoordelen of een plant eetbaar is."
  }
 }

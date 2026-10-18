@@ -41,14 +41,16 @@ head_parts, body = [], page
 for pat in [r"<title>.*?</title>\n", r'<meta name="claude:viewport-fit-sides"[^>]*>\n', r'<meta name="description"[^>]*>\n',
             r"<link [^>]*>\n", r"<style>.*?</style>\n"]:
     for m in re.findall(pat, body, flags=re.S):
-        if "claude:" in m:
+        if "claude:" in m or "fonts.g" in m:
             body = body.replace(m, "", 1); continue
         head_parts.append(m); body = body.replace(m, "", 1)
+fonts = ("<style>@font-face{font-family:'Young Serif';src:url(fonts/YoungSerif-Regular.ttf) format('truetype');font-weight:400;font-display:swap}"
+         "@font-face{font-family:'Figtree';src:url(fonts/Figtree.ttf) format('truetype');font-weight:300 900;font-display:swap}</style>\n")
 reset = ("<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}"
          "body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n")
 standalone = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
               "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
-              + reset + "".join(head_parts) + "</head>\n<body>\n" + body + "\n</body>\n</html>\n")
+              + reset + fonts + "".join(head_parts) + "</head>\n<body>\n" + body + "\n</body>\n</html>\n")
 open(os.path.join(DIST, "index.html"), "w", encoding="utf-8").write(standalone)
 for f in ("artifact.html", "index.html"):
     print(f, os.path.getsize(os.path.join(DIST, f)), "bytes")

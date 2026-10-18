@@ -335,6 +335,9 @@ table.year .mini { display: none; }
     <p><strong data-i18n="footHowT"></strong> <span data-i18n="footHow"></span></p>
     <p><strong data-i18n="footDataT"></strong> <span id="footData"></span></p>
     <p id="sampleNote" data-i18n="sampleNote" hidden></p>
+    <p><strong data-i18n="privacyT"></strong> <span data-i18n="privacy"></span></p>
+    <p><strong data-i18n="legalT"></strong> <span data-i18n="legal"></span></p>
+    <p id="licenseLine"></p>
   </footer>
 </main>
 
@@ -414,6 +417,7 @@ var UI = /*__UI__*/{};
       .replace("{osm}", '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>') +
       " " + esc(T("footOM")).replace("{om}", '<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>') +
       " " + esc(T("footElev")).replace("{tiles}", '<a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Terrain Tiles</a>');
+    $("licenseLine").innerHTML = esc(T("licenseLine")).replace("{repo}", '<a href="https://github.com/samusotres/sowtime" target="_blank" rel="noopener">GitHub</a>');
     var sel = $("lang");
     if (!sel.options.length) sel.innerHTML = LANGS.map(function (l) { return '<option value="' + l + '">' + esc(UI[l].langName) + "</option>"; }).join("");
     sel.value = S.lang;
@@ -934,6 +938,7 @@ var UI = /*__UI__*/{};
       "<section><h4>" + esc(T("needs")) + '</h4><div class="facts">' + facts.map(function (f) { return '<div class="fact"><span>' + esc(f[0]) + "</span><b>" + esc(f[1]) + "</b></div>"; }).join("") + "</div></section>" +
       (comps ? "<section><h4>" + esc(T("companions")) + '</h4><div class="comp">' + comps + '</div><p class="src" style="margin-top:6px">' + esc(T("compSrc")) + "</p></section>" : "") +
       "<section><h4>" + esc(T("alsoCalled")) + '</h4><div class="names">' + others + "</div></section>" +
+      '<section><p class="src">' + esc(T("sheetNote")) + "</p></section>" +
       "</div>";
     $("sheetRoot").innerHTML = html;
     document.body.style.overflow = "hidden";

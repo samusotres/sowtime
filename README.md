@@ -58,3 +58,9 @@ run your own Photon instance or switch to a paid geocoder (the `geocode()` funct
 - One page per city and month ("What to plant in Graz in March") for search traffic.
 - Seed-shop affiliate links on plant cards, and an email reminder per month.
 - More languages and more plants.
+
+## Licence
+
+Code: MIT ([`LICENSE`](LICENSE)). Plant data and texts: CC BY 4.0 ([`LICENSE-DATA`](LICENSE-DATA)).
+Third-party data, fonts and services are listed in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+Fonts are served from this repository, so visitors' browsers don't contact Google.
