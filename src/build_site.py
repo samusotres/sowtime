@@ -13,7 +13,7 @@ def js_json(path):
     return s.replace("</", "<\\/")
 
 # Plants left out of the website because they (or their seeds/bulbs/raw roots) are well known to be poisonous.
-EXCLUDE = {"sweet_pea", "larkspur", "daffodil", "lupin", "morning_glory", "tulip", "gladiolus", "cassava"}
+EXCLUDE = {"sweet_pea", "larkspur", "daffodil", "lupin", "morning_glory", "gladiolus", "cassava"}
 
 def merged_plants():
     plants = [p for p in json.load(open(os.path.join(HERE, "plants.min.json"), encoding="utf-8")) if p["id"] not in EXCLUDE]
@@ -23,13 +23,13 @@ def merged_plants():
     for p in plants:
         p["d"], p["tip"] = {}, {}
         p.pop("desc", None); p.pop("descSrc", None); p.pop("notes", None)
-    for lang in ["en", "de", "es", "fr", "it", "nl"]:
+    for lang in ["en", "de", "es", "fr", "it", "nl", "pt"]:
         for line in open(os.path.join(HERE, "i18n", "plants_%s.psv" % lang), encoding="utf-8").read().strip().split("\n"):
             f = line.split("|")
             pid = f[0]
             if pid not in by: continue
-            if lang == "nl":
-                by[pid]["n"]["nl"] = f[1]; f = [pid] + f[2:]
+            if lang in ("nl", "pt"):
+                by[pid]["n"][lang] = f[1]; f = [pid] + f[2:]
             by[pid]["d"][lang] = f[1]; by[pid]["tip"][lang] = f[2]
     return json.dumps(plants, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 

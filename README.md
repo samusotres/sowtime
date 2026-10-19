@@ -22,7 +22,7 @@ Then connect your own domain in the host's settings.
 | Average temperature, average daily high/low, frost nights, rain, sunshine | Open-Meteo historical weather API (ERA5/ERA5-Land reanalysis, downscaled to the location's elevation), daily values 2006–2025 averaged per month in the browser | Free for non-commercial use, data CC BY 4.0. Credit is in the footer. |
 | Backup if Open-Meteo is unavailable | NASA POWER daily data, corrected for elevation with AWS Terrain Tiles | CC BY 4.0 / open data |
 | Place search and "use my location" | Photon public API (komoot), OpenStreetMap data | Free, fair use. Credit is in the footer. |
-| Plants (154) | Embedded; built from the plant database v0.1 | Yours, plus CC0/MIT parts credited in the footer |
+| Plants (155) | Embedded; built from the plant database v0.1 | Yours, plus CC0/MIT parts credited in the footer |
 
 Climate results are cached in each visitor's browser, so returning visitors don't call NASA again.
 
@@ -44,7 +44,7 @@ run your own Photon instance or switch to a paid geocoder (the `geocode()` funct
   seedlings, plant bulbs/tubers), the expected harvest months, and a seed-packet style sow/harvest strip.
 - **Year planner**: every plant × 12 months for that location.
 - **Climate**: temperature and rain chart, sun on the bed vs open ground, month-by-month table.
-- Full interface and plant texts in English, German, Spanish, French, Italian and Dutch; °C or °F.
+- Full interface and plant texts in English, German, Spanish, French, Italian, Dutch and Portuguese; °C or °F.
 
 ## Files
 
