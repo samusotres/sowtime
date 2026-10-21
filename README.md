@@ -1,19 +1,21 @@
 # Sowtime
 
-What to plant this month, anywhere in the world. Live at **https://samusotres.github.io/sowtime/**
+What to plant this month, anywhere in the world. Live at **https://sowtime.net**
 
 A single-file website: `index.html` contains the page, the planting engine and the plant database.
 No server, database or build step is needed.
 
-## Put it online (about 5 minutes, free)
+## Hosting
 
-Any static host works. Easiest options:
+The site is hosted on **Cloudflare Pages**, connected to this repository. Every push to `main` deploys automatically.
 
-- **Netlify Drop**: go to app.netlify.com/drop and drag the folder containing `index.html` onto the page.
-- **Cloudflare Pages**: Workers & Pages → Create → Pages → Upload assets → upload `index.html`.
-- **GitHub Pages**: create a repository, upload `index.html`, then Settings → Pages → deploy from the main branch.
+- Build command: *(none)*
+- Build output directory: `public`
+- Custom domains: `sowtime.net` and `www.sowtime.net`
 
-Then connect your own domain in the host's settings.
+`public/` is everything that is served: `index.html` (page, planting engine and plant database in one file), `fonts/`,
+`_headers` (security and cache headers), `robots.txt` and `sitemap.xml`. The `index.html` in the repository root only
+redirects old GitHub Pages visitors to sowtime.net.
 
 ## How it gets its data
 
@@ -48,10 +50,10 @@ run your own Photon instance or switch to a paid geocoder (the `geocode()` funct
 
 ## Files
 
-- `index.html` — the website to upload.
+- `public/` — the website as served by Cloudflare Pages.
 - `src/` — editable sources: `template.html` (page), `engine.js` (planting rules), `plants.min.json`,
   `samples.json`, `i18n/` (interface strings and plant texts per language), `build_site.py` (rebuilds the page into
-  `dist/`; copy `dist/index.html` to the repo root), `test_engine.js` (prints planting matrices in Node).
+  `dist/`; copy `dist/index.html` to `public/index.html`), `test_engine.js` (prints planting matrices in Node).
 
 ## Ideas for the next version
 

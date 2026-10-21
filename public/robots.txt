@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sowtime.net/sitemap.xml
