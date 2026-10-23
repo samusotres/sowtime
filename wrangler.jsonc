@@ -3,6 +3,9 @@
   // "name" must match the Worker's name in the Cloudflare dashboard.
   "name": "sowtime",
   "compatibility_date": "2025-01-01",
+  // Serve only on the custom domains (sowtime.net, www.sowtime.net), not on *.workers.dev.
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./public",
     "html_handling": "auto-trailing-slash",
