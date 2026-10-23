@@ -57,6 +57,11 @@ reset = ("<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0p
 standalone = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
               "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
               "<link rel=\"canonical\" href=\"https://sowtime.net/\">\n"
+              "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\">\n"
+              "<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">\n"
+              "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n"
+              "<link rel=\"manifest\" href=\"/site.webmanifest\">\n"
+              "<meta name=\"theme-color\" content=\"#2d6a43\">\n"
               + reset + fonts + "".join(head_parts) + "</head>\n<body>\n" + body + "\n</body>\n</html>\n")
 open(os.path.join(DIST, "index.html"), "w", encoding="utf-8").write(standalone)
 for f in ("artifact.html", "index.html"):
