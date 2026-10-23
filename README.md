@@ -7,7 +7,7 @@ No server, database or build step is needed.
 
 ## Hosting
 
-The site runs on **Cloudflare Workers** (static assets), connected to this repository. Every push to `main` deploys automatically.
+The site runs on **Cloudflare Workers** (static assets) at https://sowtime.net, connected to this repository. Every push to `main` deploys automatically.
 
 - Root directory: `/` (repository root)
 - Build command: *(none)*
