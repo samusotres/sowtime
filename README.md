@@ -7,10 +7,11 @@ No server, database or build step is needed.
 
 ## Hosting
 
-The site is hosted on **Cloudflare Pages**, connected to this repository. Every push to `main` deploys automatically.
+The site runs on **Cloudflare Workers** (static assets), connected to this repository. Every push to `main` deploys automatically.
 
+- Root directory: `/` (repository root)
 - Build command: *(none)*
-- Build output directory: `public`
+- Deploy command: `npx wrangler deploy` (reads [`wrangler.jsonc`](wrangler.jsonc), which serves only `public/`)
 - Custom domains: `sowtime.net` and `www.sowtime.net`
 
 `public/` is everything that is served: `index.html` (page, planting engine and plant database in one file), `fonts/`,

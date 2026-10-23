@@ -1,0 +1,11 @@
+{
+  // Cloudflare Workers static site: only the public/ folder is served.
+  // "name" must match the Worker's name in the Cloudflare dashboard.
+  "name": "sowtime",
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+}

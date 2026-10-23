@@ -8,8 +8,6 @@
 <script>
   // Old GitHub Pages address: send visitors to the new domain.
   if (/github\.io$/.test(location.hostname)) location.replace("https://sowtime.net/");
-  // Served from the repository root by mistake: use the real site in public/.
-  else if (!/\/public\//.test(location.pathname)) location.replace("/public/");
 </script>
 </head>
 <body style="font-family:system-ui,sans-serif;padding:2rem">
