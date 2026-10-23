@@ -5,7 +5,12 @@
 <title>Sowtime has moved to sowtime.net</title>
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://sowtime.net/">
-<meta http-equiv="refresh" content="0; url=https://sowtime.net/">
+<script>
+  // Old GitHub Pages address: send visitors to the new domain.
+  if (/github\.io$/.test(location.hostname)) location.replace("https://sowtime.net/");
+  // Served from the repository root by mistake: use the real site in public/.
+  else if (!/\/public\//.test(location.pathname)) location.replace("/public/");
+</script>
 </head>
 <body style="font-family:system-ui,sans-serif;padding:2rem">
 <p>Sowtime has moved to <a href="https://sowtime.net/">sowtime.net</a>.</p>
