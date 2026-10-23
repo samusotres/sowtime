@@ -66,3 +66,45 @@ standalone = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-
 open(os.path.join(DIST, "index.html"), "w", encoding="utf-8").write(standalone)
 for f in ("artifact.html", "index.html"):
     print(f, os.path.getsize(os.path.join(DIST, f)), "bytes")
+
+
+# ---- Security headers for Cloudflare (public/_headers), with hashes of the page's inline scripts ----
+import base64, hashlib
+def write_headers(html):
+    hashes = []
+    for sc in re.findall(r"<script>(.*?)</script>", html, flags=re.S):
+        hashes.append("'sha256-" + base64.b64encode(hashlib.sha256(sc.encode("utf-8")).digest()).decode() + "'")
+    csp = "; ".join([
+        "default-src 'self'",
+        "script-src 'self' " + " ".join(hashes),
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: blob: https://s3.amazonaws.com",
+        "font-src 'self'",
+        "connect-src 'self' https://archive-api.open-meteo.com https://power.larc.nasa.gov https://photon.komoot.io",
+        "manifest-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'none'",
+        "frame-ancestors 'none'",
+        "upgrade-insecure-requests",
+    ])
+    out = """/*
+  Content-Security-Policy: %s
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+""" % csp
+    open(os.path.join(DIST, "_headers"), "w", encoding="utf-8").write(out)
+    print("_headers with", len(hashes), "script hashes")
+
+write_headers(standalone)
